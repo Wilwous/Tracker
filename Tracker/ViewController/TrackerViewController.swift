@@ -9,6 +9,9 @@ import UIKit
 
 final class TrackerViewController: UIViewController {
     
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
+    
     private let search = UISearchController(searchResultsController: nil)
     
     private lazy var willTrackLabel: UILabel = {
