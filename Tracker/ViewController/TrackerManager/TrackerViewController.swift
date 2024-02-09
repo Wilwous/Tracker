@@ -24,7 +24,7 @@ final class TrackerViewController: UIViewController {
         return trackLabel
     }()
     
-    private lazy var imagesViewError = {
+    private lazy var imagesViewStub = {
         let imageView = UIImageView(image: UIImage(named: "error1"))
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +62,7 @@ final class TrackerViewController: UIViewController {
     private func addElements() {
         view.addSubview(willTrackLabel)
         view.addSubview(dateSetting)
-        view.addSubview(imagesViewError)
+        view.addSubview(imagesViewStub)
     }
     
     private func layoutConstraint() {
@@ -70,10 +70,10 @@ final class TrackerViewController: UIViewController {
             willTrackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             willTrackLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            imagesViewError.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imagesViewError.bottomAnchor.constraint(equalTo: willTrackLabel.topAnchor, constant: -8),
-            imagesViewError.heightAnchor.constraint(equalToConstant: 80),
-            imagesViewError.widthAnchor.constraint(equalToConstant: 80),
+            imagesViewStub.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imagesViewStub.bottomAnchor.constraint(equalTo: willTrackLabel.topAnchor, constant: -8),
+            imagesViewStub.heightAnchor.constraint(equalToConstant: 80),
+            imagesViewStub.widthAnchor.constraint(equalToConstant: 80),
             
             dateSetting.widthAnchor.constraint(equalToConstant: 120)
         ])
@@ -87,12 +87,22 @@ final class TrackerViewController: UIViewController {
         let addTrackerButton = UIButton(type: .custom)
         addTrackerButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 0)
         
+        addTrackerButton.addTarget(self,
+                                   action: #selector(addTrackerButtonTapped),
+                                   for: .touchUpInside)
+        
         let addTrackerButtonItem = UIBarButtonItem(customView: addTrackerButton)
         navigationItem.leftBarButtonItem = addTrackerButtonItem
         
         if let addTrakerImage = UIImage(named: "addTracker")?.withRenderingMode(.alwaysOriginal) {
             addTrackerButton.setImage(addTrakerImage, for: .normal)
         }
+    }
+    
+    @objc private func addTrackerButtonTapped() {
+        let creationHabbit = TrackerCreator()
+        let creationHabbitNavigationController = UINavigationController(rootViewController: creationHabbit)
+        present(creationHabbitNavigationController, animated: true, completion: nil)
     }
 }
 
