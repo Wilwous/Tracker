@@ -1,5 +1,5 @@
 //
-//  HabitScheduler.swift
+//  TrackerCreator.swift
 //  Tracker
 //
 //  Created by Антон Павлов on 09.02.2024.
@@ -56,7 +56,7 @@ final class TrackerCreator: UIViewController {
     }
     
     @objc private func settingCreateHabbitButtonTapped() {
-        let createHabbitbutton = TrackerCreator()
+        let createHabbitbutton = HabitCreation()
         let createNewHabbitButtonNavigationController = UINavigationController(rootViewController: createHabbitbutton)
         present(createNewHabbitButtonNavigationController, animated: true, completion: nil) }
     
