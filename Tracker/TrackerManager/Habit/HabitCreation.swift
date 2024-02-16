@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol HabitTableViewDelegate: AnyObject {
+    func didSelectTimetable()
+}
+
 final class HabitCreation: UIViewController {
     
-    private var weekDays: [WeekDays] = []
+    weak var timetableCreationDelegate: TimetableCreationDelegate?
+    
+    private var selectedWeekDays: [WeekDays] = []
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -89,7 +95,6 @@ final class HabitCreation: UIViewController {
         tableView.rowHeight = 75
         tableView.estimatedRowHeight = 75
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = .ypBackgroundDay
         
         tableView.register(HabitTableView.self,
                            forCellReuseIdentifier: HabitTableView.cellID
@@ -109,7 +114,8 @@ final class HabitCreation: UIViewController {
         
         cancel.addTarget(self,
                          action: #selector(cancelButtonTapped),
-                         for: .touchUpInside)
+                         for: .touchUpInside
+        )
         
         return cancel
     }()
@@ -122,7 +128,8 @@ final class HabitCreation: UIViewController {
         
         creation.addTarget(self,
                            action: #selector(creationButtonTapped),
-                           for: .touchUpInside)
+                           for: .touchUpInside
+        )
         
         return creation
     }()
@@ -137,6 +144,7 @@ final class HabitCreation: UIViewController {
     @objc private func cancelButtonTapped() {}
     
     @objc private func creationButtonTapped() {}
+    
     
     private func configurationView() {
         view.backgroundColor = .ypWhiteDay
@@ -190,7 +198,7 @@ final class HabitCreation: UIViewController {
     }
 }
 
-extension HabitCreation: UITableViewDataSource, UITableViewDelegate {
+extension HabitCreation: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         2
     }
@@ -207,11 +215,32 @@ extension HabitCreation: UITableViewDataSource, UITableViewDelegate {
         if indexPath.row == 0 {
             cell.configureCell(with: "Категория", subtitle: "Category", isFirstCell: true)
         }  else if indexPath.row == 1 {
-            let schedule = weekDays.isEmpty ? "" : weekDays.map { $0.shortTitle }.joined(separator: ", ")
-            cell.configureCell(with: "Расписание", subtitle: schedule, isFirstCell: false)
+            let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
+            cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
         }
-
+        
         return cell
+    }
+}
+
+extension HabitCreation: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if indexPath.row == 0 {
+            print("Category Selected")
+        } else if indexPath.row == 1 {
+            let viewController = TimetableCreation()
+            viewController.delegate = self
+            self.timetableCreationDelegate?.didSelectDays(self.selectedWeekDays)
+            present(viewController, animated: true, completion: nil)
+        }
+    }
+}
+
+extension HabitCreation: TimetableCreationDelegate {
+    func didSelectDays(_ days: [WeekDays]) {
+        selectedWeekDays = days
+        tableView.reloadData()
     }
 }
 

@@ -14,10 +14,15 @@
 		7C2D51582B57FA8C00E47A7D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C2D51562B57FA8C00E47A7D /* LaunchScreen.storyboard */; };
 		7C2D51602B5868E100E47A7D /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2D515F2B5868E100E47A7D /* TabBarViewController.swift */; };
 		7C39B4322B6BCCD900EFB019 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C39B4312B6BCCD900EFB019 /* StatisticsViewController.swift */; };
-		7C5319CB2B7677EB004F7DBB /* TrackerCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5319CA2B7677EB004F7DBB /* TrackerCreator.swift */; };
 		7CDF460A2B6F976000AD4194 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CDF46092B6F976000AD4194 /* Tracker.swift */; };
 		7CDF460C2B6F987F00AD4194 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CDF460B2B6F987F00AD4194 /* TrackerCategory.swift */; };
 		7CDF46102B6F9BF800AD4194 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CDF460F2B6F9BF800AD4194 /* TrackerRecord.swift */; };
+		7CFA16BD2B7E19D10093AE9C /* TimetableCreation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFA16BC2B7E19D10093AE9C /* TimetableCreation.swift */; };
+		7CFA16BF2B7E19FF0093AE9C /* TimetableTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFA16BE2B7E19FF0093AE9C /* TimetableTableView.swift */; };
+		7CFA16C02B7E1A260093AE9C /* WeekDays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0235272B7CFF5B000E65F6 /* WeekDays.swift */; };
+		7CFA16C12B7E29680093AE9C /* TrackerCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5319CA2B7677EB004F7DBB /* TrackerCreator.swift */; };
+		7CFA16C22B7E296E0093AE9C /* HabitCreation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0235222B7CFDA6000E65F6 /* HabitCreation.swift */; };
+		7CFA16C32B7E29860093AE9C /* HabitTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0235242B7CFE17000E65F6 /* HabitTableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +42,8 @@
 		7CDF46092B6F976000AD4194 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		7CDF460B2B6F987F00AD4194 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		7CDF460F2B6F9BF800AD4194 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
+		7CFA16BC2B7E19D10093AE9C /* TimetableCreation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableCreation.swift; sourceTree = "<group>"; };
+		7CFA16BE2B7E19FF0093AE9C /* TimetableTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableTableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +138,7 @@
 			children = (
 				7C0235202B7CFD3D000E65F6 /* View */,
 				7C0235212B7CFD4F000E65F6 /* Habit */,
+				7CFA16BB2B7E198E0093AE9C /* Timetable */,
 			);
 			path = TrackerManager;
 			sourceTree = "<group>";
@@ -143,6 +151,15 @@
 				7CDF460F2B6F9BF800AD4194 /* TrackerRecord.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		7CFA16BB2B7E198E0093AE9C /* Timetable */ = {
+			isa = PBXGroup;
+			children = (
+				7CFA16BC2B7E19D10093AE9C /* TimetableCreation.swift */,
+				7CFA16BE2B7E19FF0093AE9C /* TimetableTableView.swift */,
+			);
+			path = Timetable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,18 +232,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CFA16C32B7E29860093AE9C /* HabitTableView.swift in Sources */,
+				7CFA16BD2B7E19D10093AE9C /* TimetableCreation.swift in Sources */,
 				7CDF460A2B6F976000AD4194 /* Tracker.swift in Sources */,
-				7C0235232B7CFDA6000E65F6 /* HabitCreation.swift in Sources */,
-				7C5319CB2B7677EB004F7DBB /* TrackerCreator.swift in Sources */,
 				7CDF46102B6F9BF800AD4194 /* TrackerRecord.swift in Sources */,
+				7CFA16BF2B7E19FF0093AE9C /* TimetableTableView.swift in Sources */,
+				7CFA16C22B7E296E0093AE9C /* HabitCreation.swift in Sources */,
 				7C2D51502B57FA8A00E47A7D /* TrackerViewController.swift in Sources */,
+				7CFA16C02B7E1A260093AE9C /* WeekDays.swift in Sources */,
 				7C39B4322B6BCCD900EFB019 /* StatisticsViewController.swift in Sources */,
-				7C0235282B7CFF5B000E65F6 /* WeekDays.swift in Sources */,
 				7C2D51602B5868E100E47A7D /* TabBarViewController.swift in Sources */,
-				7C0235252B7CFE17000E65F6 /* HabitTableView.swift in Sources */,
 				7C2D514C2B57FA8A00E47A7D /* AppDelegate.swift in Sources */,
 				7C2D514E2B57FA8A00E47A7D /* SceneDelegate.swift in Sources */,
 				7CDF460C2B6F987F00AD4194 /* TrackerCategory.swift in Sources */,
+				7CFA16C12B7E29680093AE9C /* TrackerCreator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

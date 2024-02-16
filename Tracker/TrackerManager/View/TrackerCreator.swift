@@ -56,9 +56,10 @@ final class TrackerCreator: UIViewController {
     }
     
     @objc private func settingCreateHabbitButtonTapped() {
-        let createHabbitbutton = HabitCreation()
-        let createNewHabbitButtonNavigationController = UINavigationController(rootViewController: createHabbitbutton)
-        present(createNewHabbitButtonNavigationController, animated: true, completion: nil) }
+        let createHabbitButton = HabitCreation()
+        let createNewHabbitButtonNavigationController = UINavigationController(rootViewController: createHabbitButton)
+        present(createNewHabbitButtonNavigationController, animated: true, completion: nil)
+    }
     
     private func configurationView() {
         view.backgroundColor = .ypWhiteDay
@@ -73,7 +74,7 @@ final class TrackerCreator: UIViewController {
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
             creationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 73),
-            creationLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            creationLabel.centerXAnchor.constraint(equalTo: creationLabel.centerXAnchor),
             
             creationHabbitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             creationHabbitButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
@@ -85,7 +86,7 @@ final class TrackerCreator: UIViewController {
             сreatingIrregularEvents.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             сreatingIrregularEvents.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             сreatingIrregularEvents.heightAnchor.constraint(equalToConstant: 60),
-            сreatingIrregularEvents.bottomAnchor.constraint(equalTo: creationHabbitButton.bottomAnchor, constant: 64),
+            сreatingIrregularEvents.bottomAnchor.constraint(equalTo: creationHabbitButton.bottomAnchor, constant: 67),
         ])
     }
 }

@@ -8,10 +8,11 @@
 import UIKit
 
 final class HabitTableView: UITableViewCell {
-
+    
     static let cellID = String(describing: HabitTableView.self)
-
-    // MARK: - UI
+    
+    weak var delegate: HabitTableViewDelegate?
+    
     private lazy var titleLabel: UILabel = {
         let title = UILabel()
         title.textColor = .ypBlackDay
@@ -20,7 +21,7 @@ final class HabitTableView: UITableViewCell {
         
         return title
     }()
-
+    
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .ypGray
@@ -28,7 +29,7 @@ final class HabitTableView: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private lazy var arrowIcon: UIImageView = {
         let arrow = UIImageView()
         arrow.image = UIImage(named: "chevron")
@@ -45,15 +46,15 @@ final class HabitTableView: UITableViewCell {
         
         return view
     }()
-
+    
     // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .ypLightGray
+        self.backgroundColor = .ypBackgroundDay
         addElements()
         layoutConstraint()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -65,7 +66,7 @@ final class HabitTableView: UITableViewCell {
             subtitleLabel.text = subtitle
         }
     }
-
+    
     private func addElements() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(arrowIcon)
@@ -86,7 +87,17 @@ final class HabitTableView: UITableViewCell {
             arrowIcon.centerYAnchor.constraint(equalTo:  contentView.centerYAnchor),
             arrowIcon.trailingAnchor.constraint(equalTo:  contentView.trailingAnchor, constant: -16)
         ])
-        
+    }
+}
+
+extension HabitTableView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 1 {
+            let selectedCell = tableView.cellForRow(at: indexPath) as? HabitTableView
+            if let titleText = selectedCell?.titleLabel.text, titleText == "Расписание" {
+                delegate?.didSelectTimetable()
+            }
+        }
     }
 }
 
