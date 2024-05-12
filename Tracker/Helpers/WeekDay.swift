@@ -1,5 +1,5 @@
 //
-//  WeekDays.swift
+//  WeekDay.swift
 //  Tracker
 //
 //  Created by Антон Павлов on 14.02.2024.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum WeekDays: String, CaseIterable {
+enum WeekDay: String, CaseIterable {
     case monday = "Понедельник"
     case tuesday = "Вторник"
     case wednesday = "Среда"
@@ -35,4 +35,24 @@ enum WeekDays: String, CaseIterable {
             return "Вс"
         }
     }
+    
+    var numberValue: Int {
+        switch self {
+        case .monday:
+            return 1
+        case .tuesday:
+            return 2
+        case .wednesday:
+            return 3
+        case .thursday:
+            return 4
+        case .friday:
+            return 5
+        case .saturday:
+            return 6
+        case .sunday:
+            return 7
+        }
+    }
 }
+

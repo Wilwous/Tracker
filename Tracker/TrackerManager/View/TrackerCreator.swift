@@ -9,11 +9,12 @@ import UIKit
 
 final class TrackerCreator: UIViewController {
     
+    // MARK: - Private Properties
     private lazy var creationLabel: UILabel = {
         let creation = UILabel()
         creation.text = "Создание трекера"
         creation.textColor = .ypBlackDay
-        creation.font = .boldSystemFont(ofSize: 16)
+        creation.font = .systemFont(ofSize: 16)
         creation.translatesAutoresizingMaskIntoConstraints = false
         
         return creation
@@ -49,21 +50,14 @@ final class TrackerCreator: UIViewController {
         return irregularEvents
     }()
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
-        configurationView()
+        view.backgroundColor = .ypWhiteDay
         addElements()
         layoutConstraint()
     }
     
-    @objc private func settingCreateHabbitButtonTapped() {
-        let createHabbitbutton = HabitCreation()
-        let createNewHabbitButtonNavigationController = UINavigationController(rootViewController: createHabbitbutton)
-        present(createNewHabbitButtonNavigationController, animated: true, completion: nil) }
-    
-    private func configurationView() {
-        view.backgroundColor = .ypWhiteDay
-    }
-    
+    // MARK: - Setup View
     private func addElements() {
         view.addSubview(creationLabel)
         view.addSubview(creationHabbitButton)
@@ -72,20 +66,25 @@ final class TrackerCreator: UIViewController {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            creationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 73),
+            creationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
             creationLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            creationHabbitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            creationHabbitButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            creationHabbitButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
-            creationHabbitButton.heightAnchor.constraint(equalToConstant: 60),
-            creationHabbitButton.bottomAnchor.constraint(equalTo: creationLabel.bottomAnchor, constant: 300),
+            creationHabbitButton.topAnchor.constraint(equalTo: creationLabel.bottomAnchor, constant: 295),
+            creationHabbitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            creationHabbitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            сreatingIrregularEvents.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            сreatingIrregularEvents.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            сreatingIrregularEvents.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            creationHabbitButton.heightAnchor.constraint(equalToConstant: 60),
             сreatingIrregularEvents.heightAnchor.constraint(equalToConstant: 60),
-            сreatingIrregularEvents.bottomAnchor.constraint(equalTo: creationHabbitButton.bottomAnchor, constant: 64),
+            
+            сreatingIrregularEvents.topAnchor.constraint(equalTo: creationHabbitButton.bottomAnchor, constant: 16),
+            сreatingIrregularEvents.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            сreatingIrregularEvents.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
+    }
+    
+    @objc private func settingCreateHabbitButtonTapped() {
+        let createHabbitVC = HabitCreation()
+        createHabbitVC.modalPresentationStyle = .pageSheet
+        present(createHabbitVC, animated: true, completion: nil)
     }
 }

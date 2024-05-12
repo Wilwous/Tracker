@@ -48,15 +48,11 @@ final class TrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configurationView()
+        view.backgroundColor = .ypWhiteDay
         addElements()
         layoutConstraint()
         settingNavigationBar()
         settingSearchController()
-    }
-    
-    private func configurationView() {
-        view.backgroundColor = .ypWhiteDay
     }
     
     private func addElements() {

@@ -7,9 +7,16 @@
 
 import UIKit
 
+protocol HabitTableViewDelegate: AnyObject {
+    func didSelectTimetable()
+}
+
 final class HabitCreation: UIViewController {
     
-    private var weekDays: [WeekDays] = []
+    weak var timetableCreationDelegate: TimetableCreationDelegate?
+    
+    // MARK: - Private Properties
+    private var selectedWeekDays: [WeekDay] = []
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -85,11 +92,10 @@ final class HabitCreation: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
-        tableView.showsVerticalScrollIndicator = false
         tableView.rowHeight = 75
         tableView.estimatedRowHeight = 75
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = .ypBackgroundDay
+        tableView.showsVerticalScrollIndicator = false
         
         tableView.register(HabitTableView.self,
                            forCellReuseIdentifier: HabitTableView.cellID
@@ -109,7 +115,8 @@ final class HabitCreation: UIViewController {
         
         cancel.addTarget(self,
                          action: #selector(cancelButtonTapped),
-                         for: .touchUpInside)
+                         for: .touchUpInside
+        )
         
         return cancel
     }()
@@ -122,26 +129,25 @@ final class HabitCreation: UIViewController {
         
         creation.addTarget(self,
                            action: #selector(creationButtonTapped),
-                           for: .touchUpInside)
+                           for: .touchUpInside
+        )
         
         return creation
     }()
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
-        configurationView()
+        view.backgroundColor = .ypWhiteDay
+        
         addElements()
         layoutConstraint()
         settingSpacing()
+        
+        nameTextField.delegate = self
+        limitMessage.isHidden = true
     }
     
-    @objc private func cancelButtonTapped() {}
-    
-    @objc private func creationButtonTapped() {}
-    
-    private func configurationView() {
-        view.backgroundColor = .ypWhiteDay
-    }
-    
+    // MARK: - Setup View
     private func addElements() {
         view.addSubview(scrollView)
         
@@ -159,8 +165,8 @@ final class HabitCreation: UIViewController {
     
     private func settingSpacing() {
         stackViewOption.setCustomSpacing(38, after: newhabitLabel)
-        stackViewOption.setCustomSpacing(8, after: nameTextField)
-        stackViewOption.setCustomSpacing(32, after: limitMessage)
+        stackViewOption.setCustomSpacing(20, after: limitMessage)
+        stackViewOption.setCustomSpacing(20, after: nameTextField)
         stackViewOption.setCustomSpacing(508, after: tableView)
         
         stackViewOption.isLayoutMarginsRelativeArrangement = true
@@ -181,16 +187,21 @@ final class HabitCreation: UIViewController {
             stackViewOption.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             stackViewOption.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
+            newhabitLabel.topAnchor.constraint(equalTo: stackViewOption.topAnchor, constant: 27),
             newhabitLabel.heightAnchor.constraint(equalToConstant: 22),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             limitMessage.heightAnchor.constraint(equalToConstant: 22),
             tableView.heightAnchor.constraint(equalToConstant: 150),
-            stackViewButtons.heightAnchor.constraint(equalToConstant: 60),
+            stackViewButtons.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
+    @objc private func cancelButtonTapped() {}
+    
+    @objc private func creationButtonTapped() {}
 }
 
-extension HabitCreation: UITableViewDataSource, UITableViewDelegate {
+extension HabitCreation: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         2
     }
@@ -207,11 +218,50 @@ extension HabitCreation: UITableViewDataSource, UITableViewDelegate {
         if indexPath.row == 0 {
             cell.configureCell(with: "Категория", subtitle: "Category", isFirstCell: true)
         }  else if indexPath.row == 1 {
-            let schedule = weekDays.isEmpty ? "" : weekDays.map { $0.shortTitle }.joined(separator: ", ")
-            cell.configureCell(with: "Расписание", subtitle: schedule, isFirstCell: false)
+            let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
+            cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
         }
-
+        
         return cell
     }
 }
+
+extension HabitCreation: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if indexPath.row == 0 {
+            print("Category Selected")
+        } else if indexPath.row == 1 {
+            let viewController = TimetableCreation()
+            viewController.delegate = self
+            self.timetableCreationDelegate?.didSelectDays(self.selectedWeekDays)
+            present(viewController, animated: true, completion: nil)
+        }
+    }
+}
+
+extension HabitCreation: TimetableCreationDelegate {
+    func didSelectDays(_ days: [WeekDay]) {
+        selectedWeekDays = days
+        tableView.reloadData()
+    }
+}
+
+extension HabitCreation: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+        
+        limitMessage.isHidden = updatedText.count <= 38
+        
+        return updatedText.count <= 38
+    }
+}
+
 
