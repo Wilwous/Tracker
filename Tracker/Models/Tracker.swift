@@ -12,5 +12,6 @@ struct Tracker {
     let name: String
     let color: String
     let emoji: String
-    let timetable: String
+    let timetable: [WeekDay]
+    let completedDays: [Date]
 }
