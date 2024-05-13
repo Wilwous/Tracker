@@ -9,12 +9,16 @@ import UIKit
 
 final class TrackerViewController: UIViewController {
     
+    // MARK: - Delegate
+    weak var habitCreationDelegate: HabitCreationDelegate?
+    
     // MARK: - Private Properties
     private let search = UISearchController(searchResultsController: nil)
     
     private var currentDate: Date = Date()
     private var params: GeometricParams
     private var dataSource = DataSource.shared
+    private var trackers: [Tracker] = []
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: [TrackerRecord] = []
@@ -92,10 +96,13 @@ final class TrackerViewController: UIViewController {
         trackerCollectionView.reloadData()
     }
     
-    private func loadCategories() {
-        if !categories.isEmpty && visibleCategories.isEmpty {
+    private func updateCategoriesView() {
+        if visibleCategories.isEmpty {
+            trackersViewStubs.isHidden = false
             trackerCollectionView.backgroundView = trackersViewStubs
+        } else {
             trackersViewStubs.isHidden = true
+            trackerCollectionView.backgroundView = nil
         }
     }
     
@@ -126,14 +133,7 @@ final class TrackerViewController: UIViewController {
             )
         }
         
-        if visibleCategories.isEmpty {
-            trackersViewStubs.isHidden = false
-            trackerCollectionView.backgroundView = trackersViewStubs
-        } else {
-            trackersViewStubs.isHidden = true
-            trackerCollectionView.backgroundView = nil
-        }
-        
+        updateCategoriesView()
         trackerCollectionView.reloadData()
     }
     
@@ -195,9 +195,9 @@ final class TrackerViewController: UIViewController {
     }
     
     @objc private func addTrackerButtonTapped() {
-        let creationHabbit = TrackerCreator()
-        let creationHabbitNavigationController = UINavigationController(rootViewController: creationHabbit)
-        present(creationHabbitNavigationController, animated: true, completion: nil)
+        let vc = HabitCreation()
+        vc.habitCreationDelegate = self
+        present(vc, animated: true, completion: nil)
     }
 }
 
@@ -218,7 +218,7 @@ extension TrackerViewController: UISearchControllerDelegate, UISearchBarDelegate
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder() // скрыть клавиатуру после нажатия кнопки поиска
+        searchBar.resignFirstResponder()
         reloadVisibleCategories()
     }
 }
@@ -348,3 +348,31 @@ extension TrackerViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - HabitCreationDelegate
+extension TrackerViewController: HabitCreationDelegate {
+    func createButtonidTap(tracker: Tracker, category: String) {
+        trackers.append(tracker)
+        if visibleCategories.isEmpty {
+            
+            let newCategory = TrackerCategory(headline: category, trackers: [tracker])
+            visibleCategories.append(newCategory)
+        } else {
+            if let existingCategoryIndex = visibleCategories.firstIndex(where: { $0.headline == category }) {
+                var updatedTrackers = visibleCategories[existingCategoryIndex].trackers
+                updatedTrackers.append(tracker)
+                visibleCategories[existingCategoryIndex] = TrackerCategory(headline: category, trackers: updatedTrackers)
+            } else {
+                let newCategory = TrackerCategory(headline: category, trackers: [tracker])
+                visibleCategories.append(newCategory)
+            }
+        }
+        self.trackers.append(tracker)
+        trackerCollectionView.reloadData()
+        updateCategoriesView()
+        dismiss(animated: true)
+    }
+    
+    func cancelButtonDidTap() {
+        dismiss(animated: true)
+    }
+}

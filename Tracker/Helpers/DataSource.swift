@@ -23,7 +23,7 @@ final class DataSource {
             ]),
             TrackerCategory(headline: "Уборка", trackers: [
                 Tracker(id: UUID(), name: "Помыть посуду", color: "colorSelection12", emoji: "🧽", timetable: [.saturday], completedDays: []),
-                Tracker(id: UUID(), name: "Помыть полы", color: "colorSelection14", emoji: "🪣", timetable: [.sunday], completedDays: [])
+                Tracker(id: UUID(), name: "Помыть полы", color: "colorSelection14", emoji: "🪣", timetable: [.tuesday, .sunday], completedDays: [])
             ])
         ]
     }

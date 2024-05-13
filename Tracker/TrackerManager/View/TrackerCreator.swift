@@ -9,6 +9,9 @@ import UIKit
 
 final class TrackerCreator: UIViewController {
     
+    weak var trackerViewController: TrackerViewController?
+    weak var habitCreationDelegate: HabitCreationDelegate?
+    
     // MARK: - Private Properties
     private lazy var creationLabel: UILabel = {
         let creation = UILabel()

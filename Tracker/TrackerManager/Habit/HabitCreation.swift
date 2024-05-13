@@ -7,13 +7,22 @@
 
 import UIKit
 
+// MARK: - HabitTableViewDelegate
 protocol HabitTableViewDelegate: AnyObject {
     func didSelectTimetable()
 }
 
+// MARK: - HabitCreationDelegate
+protocol HabitCreationDelegate: AnyObject{
+    func createButtonidTap(tracker: Tracker, category: String)
+    func cancelButtonDidTap()
+}
+
 final class HabitCreation: UIViewController {
     
+    // MARK: - Delegate
     weak var timetableCreationDelegate: TimetableCreationDelegate?
+    weak var habitCreationDelegate: HabitCreationDelegate?
     
     // MARK: - Private Properties
     private var selectedWeekDays: [WeekDay] = []
@@ -44,6 +53,7 @@ final class HabitCreation: UIViewController {
         textField.layer.masksToBounds = true
         textField.layer.cornerRadius = 16
         textField.backgroundColor = .ypBackgroundDay
+        textField.rightViewMode = .always
         textField.translatesAutoresizingMaskIntoConstraints = false
         
         let leftIndent = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -104,6 +114,20 @@ final class HabitCreation: UIViewController {
         return tableView
     }()
     
+    private lazy var creationButton: UIButton = {
+        let creation = UIButton()
+        creation.setTitle("Создать", for: .normal)
+        creation.backgroundColor = .ypGray
+        creation.layer.cornerRadius = 16
+        
+        creation.addTarget(self,
+                           action: #selector(createButtonTapped),
+                           for: .touchUpInside
+        )
+        
+        return creation
+    }()
+    
     private lazy var cancelButton: UIButton = {
         let cancel = UIButton()
         cancel.setTitle("Отменить", for: .normal)
@@ -119,20 +143,6 @@ final class HabitCreation: UIViewController {
         )
         
         return cancel
-    }()
-    
-    private lazy var creationButton: UIButton = {
-        let creation = UIButton()
-        creation.setTitle("Создать", for: .normal)
-        creation.backgroundColor = .ypGray
-        creation.layer.cornerRadius = 16
-        
-        creation.addTarget(self,
-                           action: #selector(creationButtonTapped),
-                           for: .touchUpInside
-        )
-        
-        return creation
     }()
     
     // MARK: - Lifecycle
@@ -196,11 +206,49 @@ final class HabitCreation: UIViewController {
         ])
     }
     
-    @objc private func cancelButtonTapped() {}
+    private func showAlert(with title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
     
-    @objc private func creationButtonTapped() {}
+    private func updateAddButtonColor() {
+        if let text = nameTextField.text, !text.isEmpty || !selectedWeekDays.isEmpty {
+            creationButton.isEnabled = true
+            creationButton.backgroundColor = .ypBlackDay
+        } else {
+            creationButton.isEnabled = false
+            creationButton.backgroundColor = .ypGray
+        }
+    }
+    
+    @objc private func createButtonTapped() {
+        guard let name = nameTextField.text, !name.isEmpty else {
+            showAlert(with: "Error", message: "Please enter tracker name.")
+            return
+        }
+        
+        let newTracker = Tracker(id: UUID(),
+                                 name: name,
+                                 color: "",
+                                 emoji: "",
+                                 timetable: self.selectedWeekDays,
+                                 completedDays: [])
+        
+        habitCreationDelegate?.createButtonidTap(tracker: newTracker,
+                                                 category: "Category"
+        )
+        self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func cancelButtonTapped() {
+        dismiss(animated: true)
+        habitCreationDelegate?.cancelButtonDidTap()
+        self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+    }
 }
 
+// MARK: - UITableViewDataSource
 extension HabitCreation: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         2
@@ -226,6 +274,7 @@ extension HabitCreation: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension HabitCreation: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -237,9 +286,11 @@ extension HabitCreation: UITableViewDelegate {
             self.timetableCreationDelegate?.didSelectDays(self.selectedWeekDays)
             present(viewController, animated: true, completion: nil)
         }
+        updateAddButtonColor()
     }
 }
 
+// MARK: - TimetableCreationDelegate
 extension HabitCreation: TimetableCreationDelegate {
     func didSelectDays(_ days: [WeekDay]) {
         selectedWeekDays = days
@@ -247,6 +298,7 @@ extension HabitCreation: TimetableCreationDelegate {
     }
 }
 
+// MARK: - UITextFieldDelegate
 extension HabitCreation: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -260,8 +312,8 @@ extension HabitCreation: UITextFieldDelegate {
         
         limitMessage.isHidden = updatedText.count <= 38
         
+        updateAddButtonColor()
+        
         return updatedText.count <= 38
     }
 }
-
-
