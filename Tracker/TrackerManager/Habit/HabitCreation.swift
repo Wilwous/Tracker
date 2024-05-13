@@ -311,9 +311,9 @@ extension HabitCreation: UITextFieldDelegate {
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
         limitMessage.isHidden = updatedText.count <= 38
-        
+        textField.text = updatedText
         updateAddButtonColor()
         
-        return updatedText.count <= 38
+        return false
     }
 }
