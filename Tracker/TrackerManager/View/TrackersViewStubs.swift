@@ -49,10 +49,10 @@ final class TrackersViewStubs: UIView {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            willTrackLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            willTrackLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            willTrackLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            willTrackLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             
-            imagesViewStub.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            imagesViewStub.centerXAnchor.constraint(equalTo: centerXAnchor),
             imagesViewStub.bottomAnchor.constraint(equalTo: willTrackLabel.topAnchor, constant: -8),
             imagesViewStub.heightAnchor.constraint(equalToConstant: 80),
             imagesViewStub.widthAnchor.constraint(equalToConstant: 80),
