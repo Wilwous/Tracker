@@ -25,7 +25,6 @@ final class TimetableCreation: UIViewController {
         timetable.text = "Расписание"
         timetable.textColor = .ypBlackDay
         timetable.font = .systemFont(ofSize: 16, weight: .medium)
-        timetable.translatesAutoresizingMaskIntoConstraints = false
         
         return timetable
     }()
@@ -39,9 +38,9 @@ final class TimetableCreation: UIViewController {
         tableView.showsVerticalScrollIndicator = false
         tableView.backgroundColor = .ypBackgroundDay
         tableView.layer.cornerRadius = 16
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(TimetableTableView.self,
-                           forCellReuseIdentifier: TimetableTableView.cellID
+        tableView.register(
+            TimetableTableView.self,
+            forCellReuseIdentifier: TimetableTableView.cellID
         )
         
         return tableView
@@ -54,10 +53,11 @@ final class TimetableCreation: UIViewController {
         done.backgroundColor = .ypBlackDay
         done.layer.cornerRadius = 16
         done.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        done.translatesAutoresizingMaskIntoConstraints = false
-        done.addTarget(self,
-                       action: #selector(doneButtonTapped),
-                       for: .touchUpInside)
+        done.addTarget(
+            self,
+            action: #selector(doneButtonTapped),
+            for: .touchUpInside
+        )
         
         return done
     }()
@@ -72,9 +72,13 @@ final class TimetableCreation: UIViewController {
     
     // MARK: - Setup Views
     private func addElements() {
-        view.addSubview(timetableLabel)
-        view.addSubview(tableView)
-        view.addSubview(doneButton)
+        [timetableLabel,
+         tableView,
+         doneButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
     }
     
     private func layoutConstraint() {
@@ -142,6 +146,7 @@ extension TimetableCreation: UITableViewDataSource, UITableViewDelegate {
             isSelected: selectedWeekDay.contains(weekDay)
         )
         cell.delegate = self
+        cell.selectionStyle = . none
         
         return cell
     }

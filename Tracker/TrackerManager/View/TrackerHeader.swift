@@ -47,20 +47,20 @@ final class TrackerHeader: UICollectionReusableView {
     
     // MARK: - Setup View
     private func addElements() {
-        self.addSubview(containerView)
+        addSubview(containerView)
         containerView.addSubview(titleLabel)
     }
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            containerView.topAnchor.constraint(equalTo: self.topAnchor),
-            containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            containerView.topAnchor.constraint(equalTo: topAnchor),
+            containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 28),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
     }

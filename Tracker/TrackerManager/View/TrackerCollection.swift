@@ -28,7 +28,6 @@ final class TrackerCollection: UICollectionViewCell {
         let emoji = UILabel()
         emoji.textAlignment = .center
         emoji.font = .systemFont(ofSize: 16)
-        emoji.translatesAutoresizingMaskIntoConstraints = false
         
         return emoji
     }()
@@ -36,7 +35,7 @@ final class TrackerCollection: UICollectionViewCell {
     private lazy var emojiBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .ypWhiteDay.withAlphaComponent(0.3)
-        view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
     }()
     
@@ -47,7 +46,6 @@ final class TrackerCollection: UICollectionViewCell {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
     }()
@@ -55,7 +53,6 @@ final class TrackerCollection: UICollectionViewCell {
     private lazy var bottomBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
-        view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
@@ -63,7 +60,7 @@ final class TrackerCollection: UICollectionViewCell {
     private lazy var topBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(resource: .colorSelection18)
-        view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
     }()
     
@@ -72,7 +69,6 @@ final class TrackerCollection: UICollectionViewCell {
         daysCounter.textAlignment = .left
         daysCounter.font = .systemFont(ofSize: 12, weight: .medium)
         daysCounter.text = "0 дней"
-        daysCounter.translatesAutoresizingMaskIntoConstraints = false
         
         return daysCounter
     }()
@@ -89,8 +85,6 @@ final class TrackerCollection: UICollectionViewCell {
         let button = UIButton()
         button.backgroundColor = .colorSelection18
         button.setImage(plusImage, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
         button.addTarget(self,
                          action: #selector(completeButtonTapped),
                          for: .touchUpInside
@@ -166,13 +160,17 @@ final class TrackerCollection: UICollectionViewCell {
     
     // MARK: - Setup View
     private func addElements() {
-        contentView.addSubview(topBackgroundView)
-        contentView.addSubview(bottomBackgroundView)
-        contentView.addSubview(emojiBackgroundView)
-        contentView.addSubview(emojiLabel)
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(daysCounterLabel)
-        contentView.addSubview(completeButton)
+        [topBackgroundView,
+         bottomBackgroundView,
+         emojiBackgroundView,
+         emojiLabel,
+         nameLabel,
+         daysCounterLabel,
+         completeButton
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func layoutConstraint() {

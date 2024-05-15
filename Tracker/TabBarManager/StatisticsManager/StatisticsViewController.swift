@@ -10,10 +10,20 @@ import UIKit
 final class StatisticsViewController: UIViewController {
     
     // MARK: - UI Components
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Статистика"
+        label.font = .boldSystemFont(ofSize: 34)
+        label.textColor = .ypBlackDay
+        label.contentMode = .scaleAspectFit
+        
+        return label
+    }()
+    
     private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error3"))
         image.contentMode = .scaleAspectFit
-        image.translatesAutoresizingMaskIntoConstraints = false
+        
         return image
     }()
     
@@ -22,17 +32,7 @@ final class StatisticsViewController: UIViewController {
         label.text = "Анализировать пока нечего"
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .ypBlackDay
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Статистика"
-        label.font = .boldSystemFont(ofSize: 34)
-        label.textColor = .ypBlackDay
-        label.contentMode = .scaleAspectFit
-        label.translatesAutoresizingMaskIntoConstraints = false
+        
         return label
     }()
     
@@ -55,9 +55,13 @@ final class StatisticsViewController: UIViewController {
     
     // MARK: - Setup Methods
     private func addElemens() {
-        view.addSubview(emptyStateImageView)
-        view.addSubview(emptyStateLabel)
-        view.addSubview(titleLabel)
+        [titleLabel,
+         emptyStateImageView,
+         emptyStateLabel
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
     }
     
     private func layoutConstraint() {

@@ -13,7 +13,7 @@ protocol HabitTableViewDelegate: AnyObject {
 }
 
 // MARK: - HabitCreationDelegate
-protocol HabitCreationDelegate: AnyObject{
+protocol HabitCreationDelegate: AnyObject {
     func createButtonidTap(tracker: Tracker, category: String)
     func cancelButtonDidTap()
 }
@@ -41,7 +41,6 @@ final class HabitCreation: UIViewController {
         newhabitLabel.textColor = .ypBlackDay
         newhabitLabel.textAlignment = .center
         newhabitLabel.font = .systemFont(ofSize: 16)
-        newhabitLabel.translatesAutoresizingMaskIntoConstraints = false
         
         return newhabitLabel
     }()
@@ -54,7 +53,6 @@ final class HabitCreation: UIViewController {
         textField.layer.cornerRadius = 16
         textField.backgroundColor = .ypBackgroundDay
         textField.rightViewMode = .always
-        textField.translatesAutoresizingMaskIntoConstraints = false
         
         let leftIndent = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftIndent
@@ -73,9 +71,16 @@ final class HabitCreation: UIViewController {
         limit.textColor = .ypRed
         limit.textAlignment = .center
         limit.font = .systemFont(ofSize: 17, weight: .regular)
-        limit.translatesAutoresizingMaskIntoConstraints = false
         
         return limit
+    }()
+    
+    private lazy var stackViewOption: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
     }()
     
     private lazy var stackViewButtons: UIStackView = {
@@ -89,14 +94,6 @@ final class HabitCreation: UIViewController {
         return stack
     }()
     
-    private lazy var stackViewOption: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        return stackView
-    }()
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
@@ -106,11 +103,9 @@ final class HabitCreation: UIViewController {
         tableView.estimatedRowHeight = 75
         tableView.layer.cornerRadius = 16
         tableView.showsVerticalScrollIndicator = false
-        
         tableView.register(HabitTableView.self,
                            forCellReuseIdentifier: HabitTableView.cellID
         )
-        
         return tableView
     }()
     
@@ -119,12 +114,10 @@ final class HabitCreation: UIViewController {
         creation.setTitle("Создать", for: .normal)
         creation.backgroundColor = .ypGray
         creation.layer.cornerRadius = 16
-        
         creation.addTarget(self,
                            action: #selector(createButtonTapped),
                            for: .touchUpInside
         )
-        
         return creation
     }()
     
@@ -136,12 +129,10 @@ final class HabitCreation: UIViewController {
         cancel.layer.borderWidth = 1
         cancel.layer.cornerRadius = 16
         cancel.layer.borderColor = UIColor.ypRed.cgColor
-        
         cancel.addTarget(self,
                          action: #selector(cancelButtonTapped),
                          for: .touchUpInside
         )
-        
         return cancel
     }()
     
@@ -155,28 +146,34 @@ final class HabitCreation: UIViewController {
         
         nameTextField.delegate = self
         limitMessage.isHidden = true
+        updateSpacing()
     }
     
     // MARK: - Setup View
     private func addElements() {
         view.addSubview(scrollView)
+        view.addSubview(stackViewButtons)
         
         scrollView.addSubview(stackViewOption)
         
-        stackViewOption.addArrangedSubview(newhabitLabel)
-        stackViewOption.addArrangedSubview(nameTextField)
-        stackViewOption.addArrangedSubview(limitMessage)
-        stackViewOption.addArrangedSubview(tableView)
-        stackViewOption.addArrangedSubview(stackViewButtons)
+        [newhabitLabel,
+         nameTextField,
+         limitMessage,
+         tableView
+        ].forEach {
+            stackViewOption.addArrangedSubview($0)
+        }
         
-        stackViewButtons.addArrangedSubview(cancelButton)
-        stackViewButtons.addArrangedSubview(creationButton)
+        [cancelButton,
+         creationButton
+        ].forEach {
+            stackViewButtons.addArrangedSubview($0)
+        }
     }
     
     private func settingSpacing() {
         stackViewOption.setCustomSpacing(38, after: newhabitLabel)
-        stackViewOption.setCustomSpacing(20, after: limitMessage)
-        stackViewOption.setCustomSpacing(20, after: nameTextField)
+        stackViewOption.setCustomSpacing(24, after: nameTextField)
         stackViewOption.setCustomSpacing(508, after: tableView)
         
         stackViewOption.isLayoutMarginsRelativeArrangement = true
@@ -184,12 +181,20 @@ final class HabitCreation: UIViewController {
         stackViewButtons.layoutMargins = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
     }
     
+    private func updateSpacing() {
+        let isMessageHidden = limitMessage.isHidden
+        let spacingAfterTextField: CGFloat = isMessageHidden ? 24 : 8
+        let spacingAfterLimitMessage: CGFloat = isMessageHidden ? 32 : 0
+        stackViewOption.setCustomSpacing(CGFloat(spacingAfterTextField), after: nameTextField)
+        stackViewOption.setCustomSpacing(CGFloat(spacingAfterLimitMessage), after: limitMessage)
+    }
+    
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: stackViewButtons.topAnchor),
             
             stackViewOption.topAnchor.constraint(equalTo: scrollView.topAnchor),
             stackViewOption.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
@@ -202,10 +207,15 @@ final class HabitCreation: UIViewController {
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             limitMessage.heightAnchor.constraint(equalToConstant: 22),
             tableView.heightAnchor.constraint(equalToConstant: 150),
-            stackViewButtons.heightAnchor.constraint(equalToConstant: 60)
+            stackViewButtons.heightAnchor.constraint(equalToConstant: 60),
+            
+            stackViewButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            stackViewButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            stackViewButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
     
+    // MARK: - Alert
     private func showAlert(with title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -222,6 +232,7 @@ final class HabitCreation: UIViewController {
         }
     }
     
+    // MARK: - Action
     @objc private func createButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty else {
             showAlert(with: "Error", message: "Please enter tracker name.")
@@ -231,13 +242,11 @@ final class HabitCreation: UIViewController {
         let newTracker = Tracker(id: UUID(),
                                  name: name,
                                  color: "",
-                                 emoji: "",
+                                 emoji: "👹",
                                  timetable: self.selectedWeekDays,
                                  completedDays: [])
         
-        habitCreationDelegate?.createButtonidTap(tracker: newTracker,
-                                                 category: "Category"
-        )
+        habitCreationDelegate?.createButtonidTap(tracker: newTracker, category: "Category")
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -259,13 +268,12 @@ extension HabitCreation: UITableViewDataSource {
             withIdentifier: HabitTableView.cellID,
             for: indexPath) as? HabitTableView else {
             assertionFailure("Could not cast to CreateHabitCell")
-            
             return UITableViewCell()
         }
         
         if indexPath.row == 0 {
             cell.configureCell(with: "Категория", subtitle: "Category", isFirstCell: true)
-        }  else if indexPath.row == 1 {
+        } else if indexPath.row == 1 {
             let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
             cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
         }
@@ -310,10 +318,15 @@ extension HabitCreation: UITextFieldDelegate {
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
-        limitMessage.isHidden = updatedText.count <= 38
-        textField.text = updatedText
-        updateAddButtonColor()
-        
-        return false
+        if updatedText.count > 38 {
+            limitMessage.isHidden = false
+            
+            return false
+        } else {
+            limitMessage.isHidden = true
+            updateAddButtonColor()
+            
+            return true
+        }
     }
 }

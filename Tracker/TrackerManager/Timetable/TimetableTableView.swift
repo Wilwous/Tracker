@@ -26,7 +26,6 @@ final class TimetableTableView: UITableViewCell {
         let WeekDay = UILabel()
         WeekDay.textColor = .ypBlackDay
         WeekDay.font = .systemFont(ofSize: 17, weight: .regular)
-        WeekDay.translatesAutoresizingMaskIntoConstraints = false
         
         return WeekDay
     }()
@@ -34,7 +33,6 @@ final class TimetableTableView: UITableViewCell {
     private lazy var customSeparatorView: UIView = {
         let view = UIView()
         view.backgroundColor = .ypGray
-        view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
@@ -42,7 +40,6 @@ final class TimetableTableView: UITableViewCell {
     private lazy var daySwitch: UISwitch = {
         let daySwitch = UISwitch()
         daySwitch.onTintColor = .ypBlue
-        daySwitch.translatesAutoresizingMaskIntoConstraints = false
         daySwitch.addTarget(self,
                             action: #selector(daySwitchTapped),
                             for: .valueChanged)
@@ -72,9 +69,13 @@ final class TimetableTableView: UITableViewCell {
     
     // MARK: - Setup View
     private func addElements() {
-        contentView.addSubview(weekDayLabel)
-        contentView.addSubview(daySwitch)
-        contentView.addSubview(customSeparatorView)
+        [weekDayLabel,
+         daySwitch,
+         customSeparatorView
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func layoutConstraint() {

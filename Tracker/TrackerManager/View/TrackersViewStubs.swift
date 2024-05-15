@@ -13,9 +13,8 @@ final class TrackersViewStubs: UIView {
     private lazy var willTrackLabel: UILabel = {
         let trackLabel = UILabel()
         trackLabel.text = "Что будем отслеживать?"
-        trackLabel.font = .boldSystemFont(ofSize: 12)
+        trackLabel.font = .systemFont(ofSize: 12, weight: .medium)
         trackLabel.textColor = .ypBlackDay
-        trackLabel.translatesAutoresizingMaskIntoConstraints = false
         
         return trackLabel
     }()
@@ -23,7 +22,6 @@ final class TrackersViewStubs: UIView {
     private lazy var imagesViewStub = {
         let imageView = UIImageView(image: UIImage(named: "error1"))
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView
     }()
@@ -41,8 +39,12 @@ final class TrackersViewStubs: UIView {
     
     // MARK: - Setup View
     private func addElements() {
-        self.addSubview(willTrackLabel)
-        self.addSubview(imagesViewStub)
+        [willTrackLabel,
+         imagesViewStub
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            addSubview($0)
+        }
     }
     
     private func layoutConstraint() {

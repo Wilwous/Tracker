@@ -18,7 +18,6 @@ final class HabitTableView: UITableViewCell {
         let title = UILabel()
         title.textColor = .ypBlackDay
         title.font = .systemFont(ofSize: 16, weight: .regular)
-        title.translatesAutoresizingMaskIntoConstraints = false
         
         return title
     }()
@@ -27,7 +26,7 @@ final class HabitTableView: UITableViewCell {
         let label = UILabel()
         label.textColor = .ypGray
         label.font = .systemFont(ofSize: 16)
-        label.translatesAutoresizingMaskIntoConstraints = false
+        
         return label
     }()
     
@@ -35,7 +34,6 @@ final class HabitTableView: UITableViewCell {
         let arrow = UIImageView()
         arrow.image = UIImage(named: "chevron")
         arrow.contentMode = .scaleAspectFit
-        arrow.translatesAutoresizingMaskIntoConstraints = false
         
         return arrow
     }()
@@ -43,7 +41,6 @@ final class HabitTableView: UITableViewCell {
     private lazy var customSeparatorView: UIView = {
         let view = UIView()
         view.backgroundColor = .ypGray
-        view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
@@ -71,10 +68,14 @@ final class HabitTableView: UITableViewCell {
     
     // MARK: - Setup View
     private func addElements() {
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(arrowIcon)
-        contentView.addSubview(subtitleLabel)
-        contentView.addSubview(customSeparatorView)
+        [titleLabel,
+         arrowIcon,
+         subtitleLabel,
+         customSeparatorView
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
+        }
     }
     
     private func layoutConstraint() {
