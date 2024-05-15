@@ -80,7 +80,6 @@ final class HabitTableView: UITableViewCell {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo:  contentView.leadingAnchor, constant: 16),
             

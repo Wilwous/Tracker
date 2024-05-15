@@ -277,7 +277,7 @@ extension HabitCreation: UITableViewDataSource {
             let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
             cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
         }
-        
+        cell.selectionStyle = . none
         return cell
     }
 }
