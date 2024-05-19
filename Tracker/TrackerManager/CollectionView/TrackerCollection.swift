@@ -129,7 +129,7 @@ final class TrackerCollection: UICollectionViewCell {
         
         emojiLabel.text = tracker.emoji
         nameLabel.text = tracker.name
-        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
+        topBackgroundView.backgroundColor = tracker.color
         completeButton.backgroundColor = topBackgroundView.backgroundColor
         
         let wordDays = convertCompletedDays(completedDays)

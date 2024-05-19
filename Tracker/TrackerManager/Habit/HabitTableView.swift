@@ -11,6 +11,7 @@ final class HabitTableView: UITableViewCell {
     
     static let cellID = String(describing: HabitTableView.self)
     
+    // MARK: - Delegate
     weak var delegate: HabitTableViewDelegate?
     
     // MARK: - Private Properties
@@ -66,6 +67,14 @@ final class HabitTableView: UITableViewCell {
         }
     }
     
+    func hideSeparator() {
+        customSeparatorView.isHidden = true
+    }
+    
+    func showSeparator() {
+        customSeparatorView.isHidden = false
+    }
+    
     // MARK: - Setup View
     private func addElements() {
         [titleLabel,
@@ -98,6 +107,7 @@ final class HabitTableView: UITableViewCell {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension HabitTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 1 {

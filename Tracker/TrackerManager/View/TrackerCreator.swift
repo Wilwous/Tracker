@@ -9,48 +9,44 @@ import UIKit
 
 final class TrackerCreator: UIViewController {
     
+    // MARK: - Delegate
     weak var trackerViewController: TrackerViewController?
     weak var habitCreationDelegate: HabitCreationDelegate?
-
-    private lazy var creationLabel: UILabel = {
-        let creation = UILabel()
-        creation.text = "Создание трекера"
-        creation.textColor = .ypBlackDay
-        creation.font = .systemFont(ofSize: 16)
-        return creation
+    
+    // MARK: - Private Properties
+    private lazy var creationLabel = CustomTitleLabel(
+        text: "Создание трекера"
+    )
+    
+    private lazy var creationHabbitButton: CustomHabitTransition = {
+        let button = CustomHabitTransition(title: "Привычка")
+        button.addTarget(
+            self,
+            action: #selector(creationHabbitButtonTapped),
+            for: .touchUpInside
+        )
+        
+        return button
     }()
-
-    private lazy var creationHabbitButton: UIButton = {
-        let habbitButton = UIButton()
-        habbitButton.titleLabel?.font = .boldSystemFont(ofSize: 16)
-        habbitButton.setTitle("Привычка", for: .normal)
-        habbitButton.setTitleColor(.ypWhiteDay, for: .normal)
-        habbitButton.layer.cornerRadius = 16
-        habbitButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        habbitButton.backgroundColor = .ypBlackDay
-        habbitButton.addTarget(self,
-                               action: #selector(settingCreateHabbitButtonTapped),
-                               for: .touchUpInside)
-        return habbitButton
+    
+    private lazy var сreatingIrregularEvents: CustomHabitTransition = {
+        let button = CustomHabitTransition(title: "Нерегулярное событие")
+        button.addTarget(
+            self, action: #selector(сreatingIrregularEventsTapped),
+            for: .touchUpInside
+        )
+        
+        return button
     }()
-
-    private lazy var сreatingIrregularEvents: UIButton = {
-        let irregularEvents = UIButton()
-        irregularEvents.titleLabel?.font = .boldSystemFont(ofSize: 16)
-        irregularEvents.setTitle("Нерегулярное событие", for: .normal)
-        irregularEvents.setTitleColor(.ypWhiteDay, for: .normal)
-        irregularEvents.layer.cornerRadius = 16
-        irregularEvents.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        irregularEvents.backgroundColor = .ypBlackDay
-        return irregularEvents
-    }()
-
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .ypWhiteDay
         addElements()
         layoutConstraint()
     }
-
+    
+    // MARK: - Setup View
     private func addElements() {
         [creationLabel,
          creationHabbitButton,
@@ -60,29 +56,38 @@ final class TrackerCreator: UIViewController {
             view.addSubview($0)
         }
     }
-
+    
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
             creationLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
             creationLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
+            
             creationHabbitButton.topAnchor.constraint(equalTo: creationLabel.bottomAnchor, constant: 295),
             creationHabbitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             creationHabbitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
+            
             creationHabbitButton.heightAnchor.constraint(equalToConstant: 60),
             сreatingIrregularEvents.heightAnchor.constraint(equalToConstant: 60),
-
+            
             сreatingIrregularEvents.topAnchor.constraint(equalTo: creationHabbitButton.bottomAnchor, constant: 16),
             сreatingIrregularEvents.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             сreatingIrregularEvents.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
-
-    @objc private func settingCreateHabbitButtonTapped() {
-        let createHabbitVC = HabitCreation()
+    
+    // MARK: - Action
+    @objc private func settingCreateHabbitButtonTapped(isHabit: Bool) {
+        let createHabbitVC = HabitCreation(isHabit: isHabit)
         createHabbitVC.habitCreationDelegate = trackerViewController
         createHabbitVC.modalPresentationStyle = .pageSheet
         present(createHabbitVC, animated: true, completion: nil)
+    }
+    
+    @objc private func creationHabbitButtonTapped() {
+        settingCreateHabbitButtonTapped(isHabit: true)
+    }
+    
+    @objc private func сreatingIrregularEventsTapped() {
+        settingCreateHabbitButtonTapped(isHabit: false)
     }
 }

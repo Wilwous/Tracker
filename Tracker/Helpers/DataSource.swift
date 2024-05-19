@@ -18,12 +18,12 @@ final class DataSource {
     private init() {
         self.trackerCategories = [
             TrackerCategory(headline: "Домашний уют", trackers: [
-                Tracker(id: UUID(), name: "Поливать цветы", color: "colorSelection16", emoji: "🪴", timetable: [.monday,.wednesday,.friday], completedDays: []),
-                Tracker(id: UUID(), name: "Налить стакан пива", color: "colorSelection11", emoji: "🍺", timetable: [.friday,.saturday,.sunday], completedDays: [])
+                Tracker(id: UUID(), name: "Поливать цветы", color: .colorSelection16, emoji: "🪴", timetable: [.monday,.wednesday,.friday], completedDays: []),
+                Tracker(id: UUID(), name: "Налить стакан пива", color: .colorSelection11, emoji: "🍺", timetable: [.friday,.saturday,.sunday], completedDays: [])
             ]),
             TrackerCategory(headline: "Уборка", trackers: [
-                Tracker(id: UUID(), name: "Помыть посуду", color: "colorSelection12", emoji: "🧽", timetable: [.saturday], completedDays: []),
-                Tracker(id: UUID(), name: "Помыть полы", color: "colorSelection14", emoji: "🪣", timetable: [.tuesday, .sunday], completedDays: [])
+                Tracker(id: UUID(), name: "Помыть посуду", color: .colorSelection12, emoji: "🧽", timetable: [.saturday], completedDays: []),
+                Tracker(id: UUID(), name: "Помыть полы", color: .colorSelection14, emoji: "🪣", timetable: [.tuesday, .sunday], completedDays: [])
             ])
         ]
     }
