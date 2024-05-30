@@ -13,7 +13,7 @@ final class CustomHabitTransition: UIButton {
     init(title: String) {
         super.init(frame: .zero)
         titleLabel?.font = .boldSystemFont(ofSize: 16)
-        setTitle("Привычка", for: .normal)
+        setTitle(title, for: .normal)
         setTitleColor(.ypWhiteDay, for: .normal)
         layer.cornerRadius = 16
         contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
@@ -48,4 +48,3 @@ final class CustomHabitTransition: UIButton {
         addTarget(target, action: action, for: .touchUpInside)
     }
 }
-

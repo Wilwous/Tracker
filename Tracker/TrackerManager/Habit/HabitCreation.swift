@@ -323,15 +323,17 @@ final class HabitCreation: UIViewController {
     // MARK: - Action
     @objc private func createButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty,
-        let emoji = selectedEmoji,
-            let color = selectedColor else {
-                showAlert(with: "Error", message: "Please enter tracker name.")
-                return
-            }
+              let emoji = selectedEmoji,
+              let color = selectedColor else {
+            showAlert(with: "Error", message: "Please enter tracker name.")
+            return
+        }
+        
+        let codableColor = CodableColor(color: color)
         
         let newTracker = Tracker(id: UUID(),
                                  name: name,
-                                 color: color,
+                                 color: codableColor,
                                  emoji: emoji,
                                  timetable: self.selectedWeekDays,
                                  completedDays: [])
@@ -340,6 +342,11 @@ final class HabitCreation: UIViewController {
             tracker: newTracker,
             category: "Category"
         )
+        
+        if let trackerViewController = habitCreationDelegate as? TrackerViewController {
+            trackerViewController.reload()
+        }
+        
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     

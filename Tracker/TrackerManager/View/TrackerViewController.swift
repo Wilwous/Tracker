@@ -91,18 +91,33 @@ final class TrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
+        CoreDataStack.shared.trackerStore.delegate = self
+        CoreDataStack.shared.trackerRecordStore.delegate = self
+        CoreDataStack.shared.trackerCategoryStore.delegate = self
+        completedTrackers = CoreDataStack.shared.trackerRecordStore.fetchAllCompletedTrackers()
         addElements()
         layoutConstraint()
         settingNavigationBar()
-        reloadVisibleCategories()
         reload()
     }
     
     // MARK: - Public Methods
-    private func reload() {
-        categories = dataSource.getTrackerCategories()
-        visibleCategories = categories
-        dateSettingTapped()
+    func reload() {
+        trackers = CoreDataStack.shared.trackerStore.fetchAllTrackers()
+        categories = CoreDataStack.shared.trackerCategoryStore.fetchAllCategories()
+        
+        if categories.isEmpty || !categories.contains(where: { $0.headline == "По умолчанию" }) {
+            let defaultCategory = TrackerCategory(headline: "По умолчанию", trackers: trackers)
+            categories.append(defaultCategory)
+        } else {
+            for i in 0..<categories.count {
+                if categories[i].headline == "По умолчанию" {
+                    categories[i] = TrackerCategory(headline: "По умолчанию", trackers: trackers)
+                }
+            }
+        }
+        
+        reloadVisibleCategories()
         trackerCollectionView.reloadData()
     }
     
@@ -112,14 +127,16 @@ final class TrackerViewController: UIViewController {
         let filterText = (searchBar.text ?? "").lowercased()
         
         visibleCategories = categories.compactMap { category in
-            let trackers = category.trackers.filter { tracker in
+            let filteredTrackers = category.trackers.filter { tracker in
                 let textCondition = filterText.isEmpty || tracker.name.lowercased().contains(filterText)
                 let dateCondition = tracker.timetable.contains { weekDay in
                     weekDay.numberValue == filterWeekday
                 }
+                
                 return textCondition && dateCondition
             }
-            return trackers.isEmpty ? nil : TrackerCategory(headline: category.headline, trackers: trackers)
+            
+            return filteredTrackers.isEmpty ? nil : TrackerCategory(headline: category.headline, trackers: filteredTrackers)
         }
         
         updateCategoriesView()
@@ -132,14 +149,23 @@ final class TrackerViewController: UIViewController {
     }
     
     private func markTrackerAsCompleted(id: UUID) {
-        completedTrackerIds.insert(id)
         let record = TrackerRecord(id: id, date: dateSetting.date)
         completedTrackers.append(record)
+        
+        if let tracker = CoreDataStack.shared.trackerStore.fetchTrackerByID(id: id) {
+            CoreDataStack.shared.trackerRecordStore.addTrackerRecord(for: tracker, date: dateSetting.date)
+        }
+        
+        reloadVisibleCategories()
     }
-    
     private func markTrackerAsUncompleted(id: UUID) {
-        completedTrackerIds.remove(id)
         completedTrackers.removeAll { $0.id == id && Calendar.current.isDate($0.date, inSameDayAs: dateSetting.date) }
+        
+        if let tracker = CoreDataStack.shared.trackerStore.fetchTrackerByID(id: id) {
+            CoreDataStack.shared.trackerRecordStore.deleteTrackerRecord(for: tracker, date: dateSetting.date)
+        }
+        
+        reloadVisibleCategories()
     }
     
     private func isTrackerCompleted(id: UUID) -> Bool {
@@ -217,19 +243,19 @@ extension TrackerViewController: UISearchControllerDelegate, UISearchBarDelegate
     }
 }
 
-// MARK: - TrackerCollectionDelegate
+
 extension TrackerViewController: TrackerCollectionDelegate {
     func selectedDate() -> Date {
         return dateSetting.date
     }
     
     func completeTracker(id: UUID, at indexPath: IndexPath) {
-        let selectedDay = currentDate
-        let today = Date()
-        if Calendar.current.compare(selectedDay, to: today, toGranularity: .day) != .orderedDescending {
+        if isTrackerCompletedToday(id: id) {
+            markTrackerAsUncompleted(id: id)
+        } else {
             markTrackerAsCompleted(id: id)
-            trackerCollectionView.reloadItems(at: [indexPath])
         }
+        trackerCollectionView.reloadItems(at: [indexPath])
     }
     
     func uncompleteTracker(id: UUID, at indexPath: IndexPath) {
@@ -358,20 +384,51 @@ extension TrackerViewController: UICollectionViewDataSource {
 // MARK: - HabitCreationDelegate
 extension TrackerViewController: HabitCreationDelegate {
     func createButtonidTap(tracker: Tracker, category: String) {
-        if let existingCategoryIndex = categories.firstIndex(where: { $0.headline == category }) {
+        let defaultCategoryName = "По умолчанию"
+        
+        if let existingCategoryIndex = categories.firstIndex(where: { $0.headline == defaultCategoryName }) {
             var updatedTrackers = categories[existingCategoryIndex].trackers
             updatedTrackers.append(tracker)
-            categories[existingCategoryIndex] = TrackerCategory(headline: category, trackers: updatedTrackers)
+            categories[existingCategoryIndex] = TrackerCategory(headline: defaultCategoryName, trackers: updatedTrackers)
         } else {
-            let newCategory = TrackerCategory(headline: category, trackers: [tracker])
+            let newCategory = TrackerCategory(headline: defaultCategoryName, trackers: [tracker])
             categories.append(newCategory)
         }
+        
+        if let trackerCategoryCoreData = CoreDataStack.shared.trackerCategoryStore.fetchCategoryByName(name: defaultCategoryName) {
+            CoreDataStack.shared.trackerStore.createTracker(from: tracker, in: trackerCategoryCoreData)
+        } else {
+            let newCategoryCoreData = CoreDataStack.shared.trackerCategoryStore.createCategory(with: defaultCategoryName)
+            CoreDataStack.shared.trackerStore.createTracker(from: tracker, in: newCategoryCoreData)
+        }
+        
         reloadVisibleCategories()
         trackerCollectionView.reloadData()
+        
         dismiss(animated: true)
     }
     
     func cancelButtonDidTap() {
         dismiss(animated: true)
+    }
+}
+
+// MARK: - CoreDataDelegate
+extension TrackerViewController: TrackerStoreDelegate {
+    func trackerStoreDidChange() {
+        reload()
+    }
+}
+
+extension TrackerViewController: TrackerRecordStoreDelegate {
+    func trackerRecordStoreDidChange() {
+        completedTrackers = CoreDataStack.shared.trackerRecordStore.fetchAllCompletedTrackers()
+        reloadVisibleCategories()
+    }
+}
+
+extension TrackerViewController: TrackerCategoryStoreDelegate {
+    func trackerCategoryStoreDidChange() {
+        reload()
     }
 }
