@@ -222,12 +222,11 @@ final class HabitCreation: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .ypWhiteDay
-        
         addElements()
         layoutConstraint()
         settingSpacing()
-        
-        
+        emojiCollectionView.isScrollEnabled = false
+        colorCollectionView.isScrollEnabled = false
         nameTextField.delegate = self
         limitMessage.isHidden = true
     }
@@ -335,7 +334,11 @@ final class HabitCreation: UIViewController {
                                  name: name,
                                  color: codableColor,
                                  emoji: emoji,
-                                 timetable: self.selectedWeekDays,
+                                 timetable: isHabitTracker ? selectedWeekDays : [
+                                    .monday, .tuesday,
+                                    .wednesday, .thursday,
+                                    .friday, .saturday, .sunday
+                                 ],
                                  completedDays: [])
         
         habitCreationDelegate?.createButtonidTap(

@@ -41,7 +41,7 @@ final class TrackerCollection: UICollectionViewCell {
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Поливать растения"
+        label.textColor = .ypWhiteDay
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textAlignment = .left
         label.numberOfLines = 0

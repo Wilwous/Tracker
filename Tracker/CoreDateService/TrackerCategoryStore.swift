@@ -21,7 +21,7 @@ final class TrackerCategoryStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -63,6 +63,26 @@ final class TrackerCategoryStore: NSObject {
     }
     
     // MARK: - Private Methods
+    private func setupFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController?.delegate = self
+        
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch {
+            print("Failed to fetch trackers: \(error)")
+        }
+    }
+    
     private func saveContext() {
         let context = CoreDataStack.shared.persistentContainer.viewContext
         if context.hasChanges {
@@ -79,26 +99,6 @@ final class TrackerCategoryStore: NSObject {
             }
         } else {
             print("No context to save")
-        }
-    }
-    
-    private func setupFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: managedObjectContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        fetchedResultsController.delegate = self
-        
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            print("Failed to fetch trackers: \(error)")
         }
     }
 }

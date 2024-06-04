@@ -20,7 +20,7 @@ final class TrackerStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -34,13 +34,10 @@ final class TrackerStore: NSObject {
         let trackerCoreData = TrackerCoreData(context: managedObjectContext)
         trackerCoreData.id = tracker.id
         trackerCoreData.name = tracker.name
-        //            trackerCoreData.color = tracker.color.toHexString()
         trackerCoreData.color = tracker.color.color.toHexString()
         trackerCoreData.emoji = tracker.emoji
         trackerCoreData.timetable = tracker.timetableToJSON()
         trackerCoreData.category = category
-        
-        print("🍔 Saving tracker with name: \(tracker.name), category: \(category.title ?? "Unknown")")
         
         saveContext()
     }
@@ -91,10 +88,10 @@ final class TrackerStore: NSObject {
             cacheName: nil
         )
         
-        fetchedResultsController.delegate = self
+        fetchedResultsController?.delegate = self
         
         do {
-            try fetchedResultsController.performFetch()
+            try fetchedResultsController?.performFetch()
         } catch {
             print("Failed to fetch trackers: \(error)")
         }
@@ -123,7 +120,6 @@ final class TrackerStore: NSObject {
 // MARK: - NSFetchedResultsControllerDelegate
 extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        print("🍔 controllerDidChangeContent called")
         delegate?.trackerStoreDidChange()
     }
 }

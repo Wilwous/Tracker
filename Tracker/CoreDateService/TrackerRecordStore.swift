@@ -21,7 +21,7 @@ final class TrackerRecordStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -30,6 +30,7 @@ final class TrackerRecordStore: NSObject {
         setupFetchedResultsController()
     }
     
+    // MARK: - Public Methods
     func addTrackerRecord(for trackerCoreData: TrackerCoreData, date: Date) {
         let trackerRecordCoreData = TrackerRecordCoreData(context: managedObjectContext)
         trackerRecordCoreData.id = UUID()
@@ -38,7 +39,6 @@ final class TrackerRecordStore: NSObject {
         saveContext()
     }
     
-    // MARK: - Public Methods
     func deleteTrackerRecord(for trackerCoreData: TrackerCoreData, date: Date) {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "tracker == %@ AND date == %@", trackerCoreData, date as CVarArg)
@@ -79,10 +79,10 @@ final class TrackerRecordStore: NSObject {
             cacheName: nil
         )
         
-        fetchedResultsController.delegate = self
+        fetchedResultsController?.delegate = self
         
         do {
-            try fetchedResultsController.performFetch()
+            try fetchedResultsController?.performFetch()
         } catch {
             print("Failed to fetch trackers: \(error)")
         }
