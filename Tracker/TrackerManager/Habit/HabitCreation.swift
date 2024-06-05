@@ -330,16 +330,18 @@ final class HabitCreation: UIViewController {
         
         let codableColor = CodableColor(color: color)
         
-        let newTracker = Tracker(id: UUID(),
-                                 name: name,
-                                 color: codableColor,
-                                 emoji: emoji,
-                                 timetable: isHabitTracker ? selectedWeekDays : [
-                                    .monday, .tuesday,
-                                    .wednesday, .thursday,
-                                    .friday, .saturday, .sunday
-                                 ],
-                                 completedDays: [])
+        let newTracker = Tracker(
+            id: UUID(),
+            name: name,
+            color: codableColor,
+            emoji: emoji,
+            timetable: isHabitTracker ? selectedWeekDays : [
+                .monday, .tuesday,
+                .wednesday, .thursday,
+                .friday, .saturday, .sunday
+            ],
+            completedDays: []
+        )
         
         habitCreationDelegate?.createButtonidTap(
             tracker: newTracker,
