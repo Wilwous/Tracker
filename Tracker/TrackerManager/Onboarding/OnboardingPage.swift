@@ -11,7 +11,7 @@ enum OnboardingPage: Int, CaseIterable {
     case pageOne = 0
     case pageTwo
 
-    var title: String {
+    var titlePage: String {
         switch self {
         case .pageOne:
             return "Отслеживайте только то, что хотите"

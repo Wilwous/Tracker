@@ -8,9 +8,8 @@
 import UIKit
 
 protocol TrackerCollectionDelegate: AnyObject {
-    func completeTracker(id: UUID, at indexPath: IndexPath)
-    func uncompleteTracker(id: UUID, at indexPath: IndexPath)
-    func selectedDate() -> Date
+    func markTrackerAsCompleted(id: UUID, at indexPath: IndexPath)
+    func markTrackerAsUncompleted(id: UUID, at indexPath: IndexPath)
 }
 
 final class TrackerCollection: UICollectionViewCell {
@@ -215,19 +214,11 @@ final class TrackerCollection: UICollectionViewCell {
             return
         }
         
-        let currentDate = Date()
-        let selectedDate = delegate?.selectedDate() ?? Date()
-        if Calendar.current.compare(selectedDate, to: currentDate, toGranularity: .day) != .orderedDescending {
-            if isCompletedToday {
-                delegate?.uncompleteTracker(id: trackerId, at: indexPath)
-            } else {
-                delegate?.completeTracker(id: trackerId, at: indexPath)
-            }
-            isCompletedToday.toggle()
+        if isCompletedToday {
+            delegate?.markTrackerAsUncompleted(id: trackerId, at: indexPath)
         } else {
-            print("You cannot mark future dates.")
+            delegate?.markTrackerAsCompleted(id: trackerId, at: indexPath)
         }
     }
 }
-
 

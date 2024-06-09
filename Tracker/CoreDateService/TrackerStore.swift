@@ -20,7 +20,7 @@ final class TrackerStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
+    var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -30,38 +30,26 @@ final class TrackerStore: NSObject {
     }
     
     // MARK: - Public Methods
-    func createTracker(from tracker: Tracker, in category: TrackerCategoryCoreData) {
+    func createTracker(from tracker: Tracker, categoryTitle: String) {
         let trackerCoreData = TrackerCoreData(context: managedObjectContext)
         trackerCoreData.id = tracker.id
         trackerCoreData.name = tracker.name
         trackerCoreData.color = tracker.color.color.toHexString()
         trackerCoreData.emoji = tracker.emoji
         trackerCoreData.timetable = tracker.timetableToJSON()
-        trackerCoreData.category = category
+        
+        let categoryStore = TrackerCategoryStore(managedObjectContext: managedObjectContext)
+        var category = categoryStore.fetchCategoryByName(name: categoryTitle)
+        if category == nil {
+            category = categoryStore.createCategory(title: categoryTitle)
+        }
+        
+        if let category = category {
+            category.addToTrackers(trackerCoreData)
+        }
         
         saveContext()
-    }
-    
-    func fetchAllTrackers() -> [Tracker] {
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        do {
-            let results = try managedObjectContext.fetch(fetchRequest)
-            return results.compactMap { trackerCoreData in
-                guard let id = trackerCoreData.id,
-                      let name = trackerCoreData.name,
-                      let colorHex = trackerCoreData.color,
-                      let emoji = trackerCoreData.emoji,
-                      let timetableJSON = trackerCoreData.timetable else {
-                    return nil
-                }
-                let timetable = Tracker.timetableFromJSON(timetableJSON) ?? []
-                let color = CodableColor(color: UIColor(hexString: colorHex))
-                return Tracker(id: id, name: name, color: color, emoji: emoji, timetable: timetable, completedDays: [])
-            }
-        } catch {
-            print("Failed to fetch trackers: \(error)")
-            return []
-        }
+        delegate?.trackerStoreDidChange()
     }
     
     func fetchTrackerByID(id: UUID) -> TrackerCoreData? {
@@ -73,6 +61,34 @@ final class TrackerStore: NSObject {
         } catch {
             print("Failed to fetch tracker by ID: \(error)")
             return nil
+        }
+    }
+    
+    func fetchTrackersGroupedByCategory() -> [TrackerCategory] {
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        do {
+            let categoryResults = try managedObjectContext.fetch(fetchRequest)
+            return categoryResults.map { category in
+                let trackers = (category.trackers?.allObjects as? [TrackerCoreData]) ?? []
+                let trackerModels: [Tracker] = trackers.compactMap { trackerCoreData in
+                    guard let id = trackerCoreData.id,
+                          let name = trackerCoreData.name,
+                          let colorHex = trackerCoreData.color,
+                          let emoji = trackerCoreData.emoji,
+                          let timetableJSON = trackerCoreData.timetable else {
+                        return nil
+                    }
+                    let timetable = Tracker.timetableFromJSON(timetableJSON) ?? []
+                    let color = CodableColor(color: UIColor(hexString: colorHex))
+                    return Tracker(id: id, name: name, color: color, emoji: emoji, timetable: timetable, completedDays: [])
+                }
+                return TrackerCategory(headline: category.title ?? "Без категории", trackers: trackerModels)
+            }
+        } catch {
+            print("Failed to fetch categories: \(error)")
+            return []
         }
     }
     

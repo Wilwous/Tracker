@@ -1,10 +1,3 @@
-//
-//  WeekDay.swift
-//  Tracker
-//
-//  Created by Антон Павлов on 14.02.2024.
-//
-
 import Foundation
 
 enum WeekDay: String, CaseIterable, Codable {
@@ -18,7 +11,6 @@ enum WeekDay: String, CaseIterable, Codable {
     
     var shortTitle: String {
         switch self {
-            
         case .monday:
             return "Пн"
         case .tuesday:
@@ -56,3 +48,10 @@ enum WeekDay: String, CaseIterable, Codable {
     }
 }
 
+extension WeekDay {
+    static func from(date: Date) -> WeekDay? {
+        let calendar = Calendar.current
+        let weekdayNumber = calendar.component(.weekday, from: date)
+        return WeekDay.allCases.first { $0.numberValue == weekdayNumber }
+    }
+}

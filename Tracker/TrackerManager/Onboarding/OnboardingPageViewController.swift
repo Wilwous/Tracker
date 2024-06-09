@@ -25,7 +25,7 @@ final class OnboardingPageViewController: UIViewController {
         text.textAlignment = .center
         text.textColor = .black
         text.backgroundColor = .clear
-        text.text = page.title
+        text.text = page.titlePage
         
         return text
     }()
@@ -49,8 +49,8 @@ final class OnboardingPageViewController: UIViewController {
     
     // MARK: - Setup View
     private func addElements() {
-        [textLabel,
-         backgroundImageView
+        [backgroundImageView,
+         textLabel
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
@@ -59,14 +59,14 @@ final class OnboardingPageViewController: UIViewController {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            textLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -270),
-            textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            textLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -270),
+            textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
 }

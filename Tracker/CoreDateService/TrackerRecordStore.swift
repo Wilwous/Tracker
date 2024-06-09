@@ -53,6 +53,19 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
+    func isTrackerCompletedToday(tracker: TrackerCoreData, date: Date) -> Bool {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "tracker == %@ AND date == %@", tracker, date as CVarArg)
+        
+        do {
+            let results = try managedObjectContext.fetch(fetchRequest)
+            return !results.isEmpty
+        } catch {
+            print("Failed to fetch tracker records: \(error)")
+            return false
+        }
+    }
+    
     func fetchAllCompletedTrackers() -> [TrackerRecord] {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         do {
