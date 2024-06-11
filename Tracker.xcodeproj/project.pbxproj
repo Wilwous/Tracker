@@ -26,7 +26,7 @@
 		7C5319CB2B7677EB004F7DBB /* TrackerCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5319CA2B7677EB004F7DBB /* TrackerCreator.swift */; };
 		7C802CD52C14DD4300794A5A /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CD42C14DD4300794A5A /* CategoryViewController.swift */; };
 		7C802CD82C14E06300794A5A /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CD72C14E06300794A5A /* CategoryViewModel.swift */; };
-		7C802CDA2C14E09200794A5A /* ViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CD92C14E09200794A5A /* ViewState.swift */; };
+		7C802CDA2C14E09200794A5A /* CategoryViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CD92C14E09200794A5A /* CategoryViewState.swift */; };
 		7C802CDC2C14E19400794A5A /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CDB2C14E19300794A5A /* AddCategoryViewController.swift */; };
 		7C802CDE2C14E1E200794A5A /* AddCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CDD2C14E1E200794A5A /* AddCategoryViewModel.swift */; };
 		7C802CE02C14E77800794A5A /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C802CDF2C14E77800794A5A /* CustomTextField.swift */; };
@@ -75,7 +75,7 @@
 		7C5319CA2B7677EB004F7DBB /* TrackerCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCreator.swift; sourceTree = "<group>"; };
 		7C802CD42C14DD4300794A5A /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		7C802CD72C14E06300794A5A /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
-		7C802CD92C14E09200794A5A /* ViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewState.swift; sourceTree = "<group>"; };
+		7C802CD92C14E09200794A5A /* CategoryViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewState.swift; sourceTree = "<group>"; };
 		7C802CDB2C14E19300794A5A /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 		7C802CDD2C14E1E200794A5A /* AddCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewModel.swift; sourceTree = "<group>"; };
 		7C802CDF2C14E77800794A5A /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 				7CEC75552BF141CA0017CC9A /* GeometricParams.swift */,
 				7CEC75572BF141E00017CC9A /* UIColor + Extension.swift */,
 				7C19088B2C06390D005A3EA7 /* CodableColor.swift */,
-				7C802CD92C14E09200794A5A /* ViewState.swift */,
+				7C802CD92C14E09200794A5A /* CategoryViewState.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -361,7 +361,7 @@
 				7C19088A2C036448005A3EA7 /* TrackerRecordStore.swift in Sources */,
 				7CDF46102B6F9BF800AD4194 /* TrackerRecord.swift in Sources */,
 				7C1908842BFFBEF6005A3EA7 /* CoreDataStack.swift in Sources */,
-				7C802CDA2C14E09200794A5A /* ViewState.swift in Sources */,
+				7C802CDA2C14E09200794A5A /* CategoryViewState.swift in Sources */,
 				7CEC755C2BF142960017CC9A /* TrackerHeader.swift in Sources */,
 				7C0C1FEA2C0F58F00026B0E8 /* OnboardingPageViewController.swift in Sources */,
 				7C1908862C036423005A3EA7 /* TrackerStore.swift in Sources */,

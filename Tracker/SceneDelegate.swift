@@ -8,22 +8,38 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
+
     var window: UIWindow?
-    
-    
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
+        guard let windowScene = scene as? UIWindowScene else { return }
         
-        let hasCompleteOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        let window = UIWindow(windowScene: windowScene)
         
-        if hasCompleteOnboarding {
-            window?.rootViewController = TabBarViewController()
+        if UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            switchToMainInterface(window: window)
         } else {
-            window?.rootViewController = OnboardingViewController()
+            let onboardingVC = OnboardingViewController()
+            onboardingVC.onContinue = { [weak self] in
+                self?.switchToMainInterface(window: window)
+            }
+            window.rootViewController = onboardingVC
         }
-        window?.makeKeyAndVisible()
+        
+        self.window = window
+        window.makeKeyAndVisible()
+    }
+
+    private func switchToMainInterface(window: UIWindow) {
+        let mainTabBarController = TabBarViewController()
+        window.rootViewController = mainTabBarController
+        UIView.transition(
+            with: window,
+            duration: 0.5,
+            options: .transitionCrossDissolve,
+            animations: nil,
+            completion: nil
+        )
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -53,7 +69,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-    
-    
 }
 

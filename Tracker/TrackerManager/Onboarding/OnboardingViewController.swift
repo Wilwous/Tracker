@@ -9,7 +9,10 @@ import UIKit
 
 final class OnboardingViewController: UIPageViewController {
     
-    lazy var pageControl: UIPageControl = {
+    // MARK: - Closures
+    var onContinue: (() -> Void)?
+    
+    private lazy var pageControl: UIPageControl = {
         let page = UIPageControl()
         page.currentPage = 0
         page.currentPageIndicatorTintColor = .ypGray
@@ -19,7 +22,7 @@ final class OnboardingViewController: UIPageViewController {
         return page
     }()
     
-    lazy var continueButton: UIButton = {
+    private lazy var continueButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Вот это технологии!", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -81,29 +84,19 @@ final class OnboardingViewController: UIPageViewController {
         ])
     }
     
-    // MARK: - Navigation
-    private func switchToMainInterface() {
-        if let window = view?.window {
-            let mainTabBarController = TabBarViewController()
-            window.rootViewController = mainTabBarController
-            UIView.transition(
-                with: window,
-                duration: 0.5,
-                options: .transitionCrossDissolve,
-                animations: nil,
-                completion: nil
-            )
-        }
-    }
-    
-    private func viewController(for page: OnboardingPage) -> UIViewController? {
+    private func viewController(
+        for page: OnboardingPage
+    ) -> UIViewController? {
         return OnboardingPageViewController(page: page)
     }
     
     // MARK: - Actions
     @objc private func continueButtonTapped() {
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-        switchToMainInterface()
+        UserDefaults.standard.set(
+            true,
+            forKey: "hasCompletedOnboarding"
+        )
+        onContinue?()
     }
 }
 

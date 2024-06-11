@@ -38,4 +38,6 @@ final class CoreDataStack {
     private(set) lazy var trackerRecordStore: TrackerRecordStore = {
         return TrackerRecordStore(managedObjectContext: persistentContainer.viewContext)
     }()
+    
+    private init() {}
 }

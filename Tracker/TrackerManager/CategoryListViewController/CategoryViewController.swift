@@ -17,15 +17,13 @@ final class CategoryViewController: UIViewController {
     // MARK: - Delegate
     weak var delegate: CategoryViewControllerDelegate?
     
-    // MARK: - Private Properties
-    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
+    // MARK: - Closures
+    var onCategoryAdded: ((String) -> Void)?
     
-    private var categories: [TrackerCategory] {
-        categoryStore.fetchAllCategories()
-    }
+    // MARK: - Private Properties
+    private let viewModel = CategoryViewModel()
     
     private var selectedIndexPath: IndexPath?
-    var onCategoryAdded: ((String) -> Void)?
     
     private lazy var titleLabel: CustomTitleLabel = {
         let label = CustomTitleLabel(
@@ -85,6 +83,27 @@ final class CategoryViewController: UIViewController {
         view.backgroundColor = .ypWhiteDay
         addElements()
         layoutConstraint()
+        bindViewModel()
+        viewModel.loadCategories()
+        selectedIndexPath = viewModel.selectedIndex
+    }
+    
+    private func bindViewModel() {
+        viewModel.onViewStateUpdated = { [weak self] state in
+            switch state {
+            case .empty:
+                self?.StubCategory()
+            case .populated:
+                self?.deletStubCategory()
+                self?.tableView.reloadData()
+            }
+        }
+        
+        viewModel.onCategorySelected = { [weak self] category in
+            self?.delegate?.didSelectCategory(category)
+            self?.tableView.reloadData()
+            self?.dismiss(animated: true, completion: nil)
+        }
     }
     
     // MARK: - Setup Metods
@@ -117,12 +136,12 @@ final class CategoryViewController: UIViewController {
     }
     
     private func configureCell(_ cell: UITableViewCell, at indexPath: IndexPath) {
-        cell.textLabel?.text = categories[indexPath.row].headline
+        cell.textLabel?.text = viewModel.categories[indexPath.row].headline
         cell.selectionStyle = .none
         cell.textLabel?.font = .systemFont(ofSize: 17, weight: .regular)
         cell.backgroundColor = .ypBackgroundDay
         
-        if categories.count == 1 {
+        if viewModel.categories.count == 1 {
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [
                 .layerMinXMinYCorner,
@@ -137,7 +156,7 @@ final class CategoryViewController: UIViewController {
                 .layerMaxXMinYCorner
             ]
             cell.layer.masksToBounds = true
-        } else if indexPath.row == categories.count - 1 {
+        } else if indexPath.row == viewModel.categories.count - 1 {
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [
                 .layerMinXMaxYCorner,
@@ -157,7 +176,7 @@ final class CategoryViewController: UIViewController {
             }
         }
         
-        if indexPath == selectedIndexPath {
+        if indexPath == viewModel.selectedIndex {
             let checkboxIcon = UIImageView()
             checkboxIcon.image = UIImage(named: "check")
             checkboxIcon.contentMode = .scaleAspectFit
@@ -180,7 +199,7 @@ final class CategoryViewController: UIViewController {
             }
         }
         
-        if indexPath.row != categories.count - 1 {
+        if indexPath.row != viewModel.categories.count - 1 {
             let separatorView = UIView()
             separatorView.backgroundColor = .ypGray
             separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -194,7 +213,7 @@ final class CategoryViewController: UIViewController {
             ])
         }
         
-        if indexPath.row == categories.count - 1 {
+        if indexPath.row == viewModel.categories.count - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: .greatestFiniteMagnitude)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
@@ -244,8 +263,20 @@ final class CategoryViewController: UIViewController {
         ])
     }
     
+    private func updateCategoryView(
+        for state: CategoryViewState
+    ) {
+        switch state {
+        case .empty:
+            updateStubCategory()
+        case .populated:
+            updateStubCategory()
+            tableView.reloadData()
+        }
+    }
+    
     private func updateStubCategory() {
-        if categories.isEmpty {
+        if viewModel.categories.isEmpty {
             StubCategory()
         } else {
             deletStubCategory()
@@ -269,8 +300,7 @@ final class CategoryViewController: UIViewController {
     @objc private func addCategoryButtonTapped() {
         let categoryCreationVC = AddCategoryViewController()
         categoryCreationVC.onCategoryAdded = { [weak self] categoryName in
-            self?.updateStubCategory()
-            self?.tableView.reloadData()
+            self?.viewModel.loadCategories()
         }
         
         self.present(categoryCreationVC, animated: true, completion: nil)
@@ -290,13 +320,11 @@ extension CategoryViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if categories.isEmpty {
+        if viewModel.categories.isEmpty {
             StubCategory()
         }
-        return categories.count
+        return viewModel.categories.count
     }
-    
-    
 }
 
 // MARK: - UITableViewDelegate
@@ -306,13 +334,6 @@ extension CategoryViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        selectedIndexPath = indexPath
-        tableView.reloadData()
-        delegate?.didSelectCategory(categories[indexPath.row].headline)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.250) { [weak self] in
-            self?.dismiss(animated: true, completion: nil)
-        }
+        viewModel.selectCategory(at: indexPath.row)
     }
 }
