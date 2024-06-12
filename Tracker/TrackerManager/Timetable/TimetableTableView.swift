@@ -62,7 +62,7 @@ final class TimetableTableView: UITableViewCell {
     // MARK: - Public Methods
     func configurationCell(with weekDay: WeekDay, isLastCell: Bool, isSelected: Bool) {
         self.weekDay = weekDay
-        weekDayLabel.text = weekDay.rawValue
+        weekDayLabel.text = weekDay.asText()
         customSeparatorView.isHidden = isLastCell
         daySwitch.isOn = isSelected
     }

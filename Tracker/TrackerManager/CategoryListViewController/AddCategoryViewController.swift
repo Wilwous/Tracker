@@ -15,7 +15,9 @@ final class AddCategoryViewController: UIViewController {
     
     private lazy var titleLabel: CustomTitleLabel = {
         let label = CustomTitleLabel(
-            text: "Новая категория"
+            text: LocalizationHelper.localizedString(
+                "newCategory"
+            )
         )
         
         return label
@@ -23,7 +25,9 @@ final class AddCategoryViewController: UIViewController {
     
     private lazy var nameTextField: UITextField = {
         let textField = CustomTextField(
-            placeholder: "Введите название категории"
+            placeholder: LocalizationHelper.localizedString(
+                "enterCategoryName"
+            )
         )
         
         textField.addTarget(
@@ -36,7 +40,9 @@ final class AddCategoryViewController: UIViewController {
     
     private lazy var creationButton: CustomButton = {
         let button = CustomButton(
-            title: "Готово"
+            title: LocalizationHelper.localizedString(
+                "doneButtonText"
+            )
         )
         
         button.addTarget(

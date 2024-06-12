@@ -67,7 +67,7 @@ final class TrackerCollection: UICollectionViewCell {
         let daysCounter = UILabel()
         daysCounter.textAlignment = .left
         daysCounter.font = .systemFont(ofSize: 12, weight: .medium)
-        daysCounter.text = "0 дней"
+        daysCounter.text = LocalizationHelper.localizedString("daysMany")
         
         return daysCounter
     }()
@@ -144,16 +144,16 @@ final class TrackerCollection: UICollectionViewCell {
         let lasyNumber = completedDays % 10
         let lastTwoNumbers = completedDays % 100
         if lastTwoNumbers >= 11 && lastTwoNumbers <= 19 {
-            return "\(completedDays) дней"
+            return "\(completedDays) \(LocalizationHelper.localizedString("dayMany"))"
         }
         
         switch lasyNumber {
         case 1:
-            return "\(completedDays) день"
+            return "\(completedDays) \(LocalizationHelper.localizedString("day"))"
         case 2, 3, 4:
-            return "\(completedDays) дня"
+            return "\(completedDays) \(LocalizationHelper.localizedString("days"))"
         default:
-            return "\(completedDays) дней"
+            return "\(completedDays) \(LocalizationHelper.localizedString("dayMany"))"
         }
     }
     

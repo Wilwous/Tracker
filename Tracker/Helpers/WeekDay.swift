@@ -1,32 +1,15 @@
 import Foundation
 
+import Foundation
+
 enum WeekDay: String, CaseIterable, Codable {
-    case monday = "Понедельник"
-    case tuesday = "Вторник"
-    case wednesday = "Среда"
-    case thursday = "Четверг"
-    case friday = "Пятница"
-    case saturday = "Суббота"
-    case sunday = "Воскресенье"
-    
-    var shortTitle: String {
-        switch self {
-        case .monday:
-            return "Пн"
-        case .tuesday:
-            return "Вт"
-        case .wednesday:
-            return "Ср"
-        case .thursday:
-            return "Чт"
-        case .friday:
-            return "Пт"
-        case .saturday:
-            return "Сб"
-        case .sunday:
-            return "Вс"
-        }
-    }
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+    case sunday
     
     var numberValue: Int {
         switch self {
@@ -44,6 +27,44 @@ enum WeekDay: String, CaseIterable, Codable {
             return 7
         case .sunday:
             return 1
+        }
+    }
+    
+    var shortTitle: String {
+        switch self {
+        case .monday:
+            return LocalizationHelper.localizedString("mondayShort")
+        case .tuesday:
+            return LocalizationHelper.localizedString("tuesdayShort")
+        case .wednesday:
+            return LocalizationHelper.localizedString("wednesdayShort")
+        case .thursday:
+            return LocalizationHelper.localizedString("thursdayShort")
+        case .friday:
+            return LocalizationHelper.localizedString("fridayShort")
+        case .saturday:
+            return LocalizationHelper.localizedString("saturdayShort")
+        case .sunday:
+            return LocalizationHelper.localizedString("sundayShort")
+        }
+    }
+    
+    func asText() -> String {
+        switch self {
+        case .monday:
+            return LocalizationHelper.localizedString("monday")
+        case .tuesday:
+            return LocalizationHelper.localizedString("tuesday")
+        case .wednesday:
+            return LocalizationHelper.localizedString("wednesday")
+        case .thursday:
+            return LocalizationHelper.localizedString("thursday")
+        case .friday:
+            return LocalizationHelper.localizedString("friday")
+        case .saturday:
+            return LocalizationHelper.localizedString("saturday")
+        case .sunday:
+            return LocalizationHelper.localizedString("sunday")
         }
     }
 }

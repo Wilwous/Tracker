@@ -12,7 +12,7 @@ final class TrackersViewStubs: UIView {
     // MARK: - Private Properties
     private lazy var willTrackLabel: UILabel = {
         let trackLabel = UILabel()
-        trackLabel.text = "Что будем отслеживать?"
+        trackLabel.text = LocalizationHelper.localizedString("willTrackLabel")
         trackLabel.font = .systemFont(ofSize: 12, weight: .medium)
         trackLabel.textColor = .ypBlackDay
         

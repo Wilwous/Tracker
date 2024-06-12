@@ -33,7 +33,7 @@ final class TrackerViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.delegate = self
-        searchBar.placeholder = "Поиск"
+        searchBar.placeholder = LocalizationHelper.localizedString("search")
         searchBar.searchBarStyle = .minimal
         
         return searchBar
@@ -164,7 +164,7 @@ final class TrackerViewController: UIViewController {
     private func settingNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        title = "Трекеры"
+        title = LocalizationHelper.localizedString("trackers")
         
         let addTrackerButton = UIButton(type: .custom)
         addTrackerButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 0)

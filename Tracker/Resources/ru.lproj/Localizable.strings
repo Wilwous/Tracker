@@ -1,0 +1,74 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Антон Павлов on 11.06.2024.
+  
+*/
+
+//MARK: - Onboarding
+"onboardingText1" = "Отслеживайте только то, что хотите";
+"onboardingText2" = "Даже если это не литры воды и йога";
+"onboardingButtonText" = "Вот это технологии!";
+
+//MARK: - TrackerViewController
+"trackers" = "Трекеры";
+"search" = "Поиск";
+"willTrackLabel" = "Что будем отслеживать?";
+
+//MARK: - TrackerCreator
+"trackerCreation" = "Создание трекера";
+"habit" = "Привычка";
+"irregularEvent" = "Нерегулярное событие";
+
+//MARK: - HabitCreation
+"newHabit" = "Новая привычка";
+"newIrregularEvent" = "Новое нерегулярное событие";
+"enterTrackerName" = "Введите название трекера";
+"limitMessage" = "Ограничение 38 символов";
+"create" = "Создать";
+"cancel" = "Отмена";
+"category" = "Категория";
+"timetable" = "Расписание";
+"emoji" = "Эмодзи";
+"color" = "Цвет";
+
+//MARK: - CategoryViewController
+"addCategoryButtonText" = "Добавить категорию";
+"stubsCategory" = "Привычки и события можно\nобъединить по смыслу";
+
+//MARK: - AddCategoryViewController
+"newCategory" = "Новая категория";
+"enterCategoryName" = "Введите название категории";
+"doneButtonText" = "Готово";
+
+//MARK: - TrackerCollection
+"day" = "день";
+"days" = "дня";
+"daysMany" = "дней";
+
+//MARK: - StatisticViewController
+"statistic" = "Статистика";
+"emptyStatisticText" = "Анализировать пока нечего";
+"completedTrackers" = "Трекеров завершено";
+
+//MARK: - WeekDay
+"monday" = "Понедельник";
+"tuesday" = "Вторник";
+"wednesday" = "Среда";
+"thursday" = "Четверг";
+"friday" = "Пятница";
+"saturday" = "Суббота";
+"sunday" = "Воскресенье";
+
+"mondayShort" = "Пн";
+"tuesdayShort" = "Вт";
+"wednesdayShort" = "Ср";
+"thursdayShort" = "Чт";
+"fridayShort" = "Пт";
+"saturdayShort" = "Сб";
+"sundayShort" = "Вс";
+
+"weekdays" = "Будни";
+"weekends" = "Выходные дни";
+"everyDay" = "Каждый день";

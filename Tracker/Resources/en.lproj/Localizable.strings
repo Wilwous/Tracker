@@ -1,0 +1,76 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Антон Павлов on 11.06.2024.
+  
+*/
+
+//MARK: - Onboarding
+"onboardingText1" = "Track only what you want";
+"onboardingText1" = "Even if it's not liters of water and yoga";
+"onboardingButtonText" = "Wow, these are technologies!";
+
+//MARK: - TrackerViewController
+"trackers" = "Trackers";
+"search" = "Search";
+"willTrackLabel" = "What will track?";
+
+//MARK: - TrackerCreator
+"trackerCreation" = "Create tracker";
+"habit" = "Habit";
+"irregularEvent" = "Irregular event";
+
+//MARK: - HabitCreation
+"newHabit" = "New habit";
+"newIrregularEvent" = "New irregular event";
+"enterTrackerName" = "Enter tracker name";
+"limitMessage" = "Limit 38 characters";
+"create" = "Create";
+"cancel" = "Cancel";
+"category" = "Category";
+"timetable" = "Timetable";
+"emoji" = "Emoji";
+"color" = "Color";
+
+//MARK: - CategoryViewController
+"addCategoryButtonText" = "Add category";
+"stubsCategory" = "Habits and events can\nbe combined by meaning";
+
+//MARK: - AddCategoryViewController
+"newCategory" = "New category";
+"enterCategoryName" = "Enter category";
+"doneButtonText" = "Done";
+
+//MARK: - TrackerCollection
+"day" = "day";
+"days" = "days";
+"daysMany" = "days";
+
+//MARK: - StatisticViewController
+"statistic" = "Statistic";
+"emptyStatisticText" = "There's nothing to analyze yet";
+"completedTrackers" = "Completed Trackers";
+
+//MARK: - WeekDay
+//MARK: - WeekDay
+"monday" = "Monday";
+"tuesday" = "Tuesday";
+"wednesday" = "Wednesday";
+"thursday" = "Thursday";
+"friday" = "Friday";
+"saturday" = "Saturday";
+"sunday" = "Sunday";
+
+"mondayShort" = "Mon";
+"tuesdayShort" = "Tue";
+"wednesdayShort" = "Wed";
+"thursdayShort" = "Thu";
+"fridayShort" = "Fri";
+"saturdayShort" = "Sat";
+"sundayShort" = "Sun";
+
+"weekdays" = "Weekdays";
+"weekends" = "Weekends";
+"everyday" = "Everyday";
+
