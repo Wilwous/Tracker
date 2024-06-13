@@ -100,7 +100,7 @@ final class TrackerViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypRed
         CoreDataStack.shared.trackerStore.delegate = self
         CoreDataStack.shared.trackerRecordStore.delegate = self
         CoreDataStack.shared.trackerCategoryStore.delegate = self
