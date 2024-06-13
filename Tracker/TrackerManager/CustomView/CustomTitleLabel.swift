@@ -14,7 +14,7 @@ final class CustomTitleLabel: UILabel {
         super.init(frame: .zero)
         self.text = text
         font = .systemFont(ofSize: 16, weight: .medium)
-        textColor = .ypBlackDay
+        textColor = .ypBlack
         textAlignment = .center
         translatesAutoresizingMaskIntoConstraints = false
     }

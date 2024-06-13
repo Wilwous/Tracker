@@ -9,10 +9,42 @@ import UIKit
 
 final class TabBarViewController: UITabBarController {
     
+    // MARK: - Initialization
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         settingTabControllers()
-        settingDeviderLine()
+        setupTabBarAppearance()
+    }
+    
+    override func traitCollectionDidChange(
+        _ previousTraitCollection: UITraitCollection?
+    ) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(
+            comparedTo: previousTraitCollection
+        ) {
+            setupTabBarAppearance()
+        }
+    }
+    
+    private func setupTabBarAppearance() {
+        if traitCollection.userInterfaceStyle == .dark {
+            tabBar.layer.borderColor = UIColor.black.cgColor
+        } else {
+            tabBar.layer.borderColor = UIColor.lightGray.cgColor
+        }
+        tabBar.layer.borderWidth = 1.0
+        tabBar.clipsToBounds = true
     }
     
     private func settingTabControllers() {
@@ -37,14 +69,12 @@ final class TabBarViewController: UITabBarController {
         ]
     }
     
-    private func createNavigationController(rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
+    private func createNavigationController(
+        rootViewController: UIViewController
+    ) -> UINavigationController {
+        let navigationController = UINavigationController(
+            rootViewController: rootViewController
+        )
         return navigationController
-    }
-    
-    private func settingDeviderLine() {
-        tabBar.layer.borderColor = UIColor.ypGray.cgColor
-        tabBar.layer.borderWidth = 1.0
-        tabBar.clipsToBounds = true
     }
 }

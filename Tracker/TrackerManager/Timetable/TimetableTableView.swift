@@ -24,7 +24,7 @@ final class TimetableTableView: UITableViewCell {
     
     private lazy var weekDayLabel: UILabel = {
         let WeekDay = UILabel()
-        WeekDay.textColor = .ypBlackDay
+        WeekDay.textColor = .ypBlack
         WeekDay.font = .systemFont(ofSize: 17, weight: .regular)
         
         return WeekDay
@@ -51,7 +51,7 @@ final class TimetableTableView: UITableViewCell {
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .ypBackgroundDay
+        self.backgroundColor = .ypBackground
         addElements()
         layoutConstraint()
     }

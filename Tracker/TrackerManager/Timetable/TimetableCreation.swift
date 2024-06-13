@@ -25,7 +25,7 @@ final class TimetableCreation: UIViewController {
         timetable.text = LocalizationHelper.localizedString(
             "timetable"
         )
-        timetable.textColor = .ypBlackDay
+        timetable.textColor = .ypBlack
         timetable.font = .systemFont(ofSize: 16, weight: .medium)
         
         return timetable
@@ -38,7 +38,7 @@ final class TimetableCreation: UIViewController {
         tableView.separatorStyle = .none
         tableView.clipsToBounds = true
         tableView.showsVerticalScrollIndicator = false
-        tableView.backgroundColor = .ypBackgroundDay
+        tableView.backgroundColor = .ypBackground
         tableView.layer.cornerRadius = 16
         tableView.register(
             TimetableTableView.self,
@@ -54,8 +54,8 @@ final class TimetableCreation: UIViewController {
             LocalizationHelper.localizedString("doneButtonText"),
             for: .normal
         )
-        done.setTitleColor(.ypWhiteDay, for: .normal)
-        done.backgroundColor = .ypBlackDay
+        done.setTitleColor(.ypWhite, for: .normal)
+        done.backgroundColor = .ypBlack
         done.layer.cornerRadius = 16
         done.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         done.addTarget(
@@ -70,7 +70,7 @@ final class TimetableCreation: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
     }

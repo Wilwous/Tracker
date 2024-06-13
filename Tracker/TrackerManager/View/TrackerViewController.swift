@@ -45,7 +45,6 @@ final class TrackerViewController: UIViewController {
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.calendar.firstWeekday = 2
-        datePicker.clipsToBounds = true
         
         let datePickerItem = UIBarButtonItem(customView: datePicker)
         navigationItem.rightBarButtonItem = datePickerItem
@@ -68,7 +67,7 @@ final class TrackerViewController: UIViewController {
         let collectionView = UICollectionView(
             frame: .zero, collectionViewLayout: layout
         )
-        collectionView.backgroundColor = .ypWhiteDay
+        collectionView.backgroundColor = .ypWhite
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -100,7 +99,7 @@ final class TrackerViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypRed
+        view.backgroundColor = .ypWhite
         CoreDataStack.shared.trackerStore.delegate = self
         CoreDataStack.shared.trackerRecordStore.delegate = self
         CoreDataStack.shared.trackerCategoryStore.delegate = self
@@ -109,6 +108,22 @@ final class TrackerViewController: UIViewController {
         layoutConstraint()
         settingNavigationBar()
         reload()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            view.backgroundColor = UIColor { traitCollection in
+                return traitCollection.userInterfaceStyle == .dark ? .black : .white
+            }
+            updateDatePickerAppearance(dateSetting)
+            updateSearchBarAppearance(searchBar)
+            settingNavigationBar()
+            trackerCollectionView.backgroundColor = UIColor { traitCollection in
+                return traitCollection.userInterfaceStyle == .dark ? .black : .white
+            }
+        }
     }
     
     // MARK: - Public Methods
@@ -188,8 +203,38 @@ final class TrackerViewController: UIViewController {
         let addTrackerButtonItem = UIBarButtonItem(customView: addTrackerButton)
         navigationItem.leftBarButtonItem = addTrackerButtonItem
         
-        let addTrakerImage = UIImage(named: "addTracker")?.withRenderingMode(.alwaysOriginal)
-        addTrackerButton.setImage(addTrakerImage, for: .normal)
+        let addTrackerImage = UIImage(
+            named: traitCollection.userInterfaceStyle == .dark ? "addTrackerDarkMode" : "addTracker")?.withRenderingMode(.alwaysOriginal
+            )
+        addTrackerButton.setImage(addTrackerImage, for: .normal)
+    }
+    
+    private func updateDatePickerAppearance(_ datePicker: UIDatePicker) {
+        if traitCollection.userInterfaceStyle == .dark {
+            datePicker.overrideUserInterfaceStyle = .light
+            datePicker.backgroundColor = UIColor.ypLightGray
+            datePicker.layer.cornerRadius = 8
+            datePicker.layer.masksToBounds = true
+            
+            let textFieldInsideDatePicker = (
+                datePicker.subviews[0].subviews[0].subviews[0] as? UITextField
+            )
+            textFieldInsideDatePicker?.textColor = UIColor.black
+        } else {
+            datePicker.overrideUserInterfaceStyle = .unspecified
+            datePicker.backgroundColor = nil
+            datePicker.layer.cornerRadius = 0
+        }
+    }
+    
+    private func updateSearchBarAppearance(_ searchBar: UISearchBar) {
+        searchBar.barStyle = traitCollection.userInterfaceStyle == .dark ? .black : .default
+        searchBar.searchTextField.textColor = UIColor { traitCollection in
+            return traitCollection.userInterfaceStyle == .dark ? .white : .black
+        }
+        searchBar.searchTextField.backgroundColor = UIColor { traitCollection in
+            return traitCollection.userInterfaceStyle == .dark ? .darkGray : .white
+        }
     }
     
     private func addElements() {
@@ -204,7 +249,7 @@ final class TrackerViewController: UIViewController {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            dateSetting.widthAnchor.constraint(equalToConstant: 120),
+            dateSetting.widthAnchor.constraint(equalToConstant: 110),
             
             searchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 136),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),

@@ -14,10 +14,10 @@ final class CustomButton: UIButton {
         super.init(frame: .zero)
         titleLabel?.font = .boldSystemFont(ofSize: 16)
         setTitle(title, for: .normal)
-        setTitleColor(.ypWhiteDay, for: .normal)
+        setTitleColor(.ypWhite, for: .normal)
         layer.cornerRadius = 16
         contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        backgroundColor = .ypBlackDay
+        backgroundColor = .ypBlack
         translatesAutoresizingMaskIntoConstraints = false
     }
     

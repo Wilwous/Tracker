@@ -14,7 +14,7 @@ final class CustomTextField: UITextField {
         textAlignment = .left
         layer.masksToBounds = true
         layer.cornerRadius = 16
-        backgroundColor = .ypBackgroundDay
+        backgroundColor = .ypBackground
         rightViewMode = .always
         translatesAutoresizingMaskIntoConstraints = false
         

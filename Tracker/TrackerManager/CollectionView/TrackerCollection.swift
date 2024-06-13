@@ -33,14 +33,14 @@ final class TrackerCollection: UICollectionViewCell {
     
     private lazy var emojiBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .ypWhiteDay.withAlphaComponent(0.3)
+        view.backgroundColor = .ypWhite.withAlphaComponent(0.3)
         
         return view
     }()
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .ypWhiteDay
+        label.textColor = .ypWhite
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textAlignment = .left
         label.numberOfLines = 0
@@ -74,7 +74,7 @@ final class TrackerCollection: UICollectionViewCell {
     
     private lazy var plusImage: UIImage? = {
         let image = UIImage(systemName: "plus")
-        let coloredImage = image?.withTintColor(.ypWhiteDay, renderingMode: .alwaysOriginal)
+        let coloredImage = image?.withTintColor(.ypWhite, renderingMode: .alwaysOriginal)
         let configuredImage = coloredImage?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold))
         
         return configuredImage

@@ -52,7 +52,7 @@ final class AddCategoryViewController: UIViewController {
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         nameTextField.delegate = self
         addElements()
         layoutConstraint()
@@ -97,7 +97,7 @@ final class AddCategoryViewController: UIViewController {
         
         viewModel.onCreationButtonStateUpdated = { [weak self] isEnabled in
             self?.creationButton.isEnabled = isEnabled
-            self?.creationButton.backgroundColor = isEnabled ? .ypBlackDay : .ypGray
+            self?.creationButton.backgroundColor = isEnabled ? .ypBlack : .ypGray
         }
     }
     

@@ -16,7 +16,7 @@ final class TrackersViewStubs: UIView {
             "willTrackLabel"
         )
         trackLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        trackLabel.textColor = .ypBlackDay
+        trackLabel.textColor = .ypBlack
         
         return trackLabel
     }()

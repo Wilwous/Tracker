@@ -80,7 +80,7 @@ final class CategoryViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
         bindViewModel()
@@ -139,7 +139,7 @@ final class CategoryViewController: UIViewController {
         cell.textLabel?.text = viewModel.categories[indexPath.row].headline
         cell.selectionStyle = .none
         cell.textLabel?.font = .systemFont(ofSize: 17, weight: .regular)
-        cell.backgroundColor = .ypBackgroundDay
+        cell.backgroundColor = .ypBackground
         
         if viewModel.categories.count == 1 {
             cell.layer.cornerRadius = 16
@@ -237,7 +237,7 @@ final class CategoryViewController: UIViewController {
         )
         
         noResultsLabel.attributedText = attributedString
-        noResultsLabel.textColor = .ypBlackDay
+        noResultsLabel.textColor = .ypBlack
         noResultsLabel.textAlignment = .center
         noResultsLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         noResultsLabel.numberOfLines = 2

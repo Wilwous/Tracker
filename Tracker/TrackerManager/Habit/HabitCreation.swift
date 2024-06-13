@@ -50,7 +50,7 @@ final class HabitCreation: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .ypWhiteDay
+        scrollView.backgroundColor = .ypWhite
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
         return scrollView
@@ -183,12 +183,12 @@ final class HabitCreation: UIViewController {
             LocalizationHelper.localizedString("create"),
             for: .normal
         )
-        creation.backgroundColor = .ypGray
         creation.layer.cornerRadius = 16
         creation.translatesAutoresizingMaskIntoConstraints = false
-        creation.addTarget(self,
-                           action: #selector(createButtonTapped),
-                           for: .touchUpInside
+        creation.addTarget(
+            self,
+            action: #selector(createButtonTapped),
+            for: .touchUpInside
         )
         return creation
     }()
@@ -200,14 +200,15 @@ final class HabitCreation: UIViewController {
             for: .normal
         )
         cancel.setTitleColor(.red, for: .normal)
-        cancel.backgroundColor = .ypWhiteDay
+        cancel.backgroundColor = .ypWhite
         cancel.layer.borderWidth = 1
         cancel.layer.cornerRadius = 16
         cancel.layer.borderColor = UIColor.ypRed.cgColor
         cancel.translatesAutoresizingMaskIntoConstraints = false
-        cancel.addTarget(self,
-                         action: #selector(cancelButtonTapped),
-                         for: .touchUpInside
+        cancel.addTarget(
+            self,
+            action: #selector(cancelButtonTapped),
+            for: .touchUpInside
         )
         return cancel
     }()
@@ -228,7 +229,7 @@ final class HabitCreation: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
         settingSpacing()
@@ -236,6 +237,14 @@ final class HabitCreation: UIViewController {
         colorCollectionView.isScrollEnabled = false
         nameTextField.delegate = self
         limitMessage.isHidden = true
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateAddButtonColor()
+        }
     }
     
     // MARK: - Setup View
@@ -317,12 +326,16 @@ final class HabitCreation: UIViewController {
     }
     
     private func updateAddButtonColor() {
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        
         if let text = nameTextField.text, !text.isEmpty || !selectedWeekDays.isEmpty {
             creationButton.isEnabled = true
-            creationButton.backgroundColor = .ypBlackDay
+            creationButton.backgroundColor = isDarkMode ? .white : .black
+            creationButton.setTitleColor(isDarkMode ? .black : .white, for: .normal)
         } else {
             creationButton.isEnabled = false
-            creationButton.backgroundColor = .ypGray
+            creationButton.backgroundColor = .gray
+            creationButton.setTitleColor(.white, for: .normal)
         }
     }
     

@@ -14,7 +14,7 @@ final class StatisticsViewController: UIViewController {
         let label = UILabel()
         label.text = LocalizationHelper.localizedString("statistic")
         label.font = .boldSystemFont(ofSize: 34)
-        label.textColor = .ypBlackDay
+        label.textColor = .ypBlack
         label.contentMode = .scaleAspectFit
         
         return label
@@ -31,7 +31,7 @@ final class StatisticsViewController: UIViewController {
         let label = UILabel()
         label.text = LocalizationHelper.localizedString("emptyStatisticText")
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .ypBlackDay
+        label.textColor = .ypBlack
         
         return label
     }()
@@ -48,7 +48,7 @@ final class StatisticsViewController: UIViewController {
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElemens()
         layoutConstraint()
     }

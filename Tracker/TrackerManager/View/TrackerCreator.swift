@@ -45,7 +45,7 @@ final class TrackerCreator: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
     }
