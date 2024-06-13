@@ -67,7 +67,7 @@ final class TrackerCollection: UICollectionViewCell {
         let daysCounter = UILabel()
         daysCounter.textAlignment = .left
         daysCounter.font = .systemFont(ofSize: 12, weight: .medium)
-        daysCounter.text = "0 дней"
+        daysCounter.text = LocalizationHelper.localizedString("daysMany")
         
         return daysCounter
     }()
@@ -117,10 +117,11 @@ final class TrackerCollection: UICollectionViewCell {
     }
     
     // MARK: - Public Methods
-    func configuration(with tracker: Tracker,
-                       isCompletedToday: Bool,
-                       completedDays: Int,
-                       indexPath: IndexPath
+    func configuration(
+        with tracker: Tracker,
+        isCompletedToday: Bool,
+        completedDays: Int,
+        indexPath: IndexPath
     ) {
         self.trackerId = tracker.id
         self.isCompletedToday = isCompletedToday
@@ -143,17 +144,13 @@ final class TrackerCollection: UICollectionViewCell {
     private func convertCompletedDays(_ completedDays: Int) -> String {
         let lasyNumber = completedDays % 10
         let lastTwoNumbers = completedDays % 100
-        if lastTwoNumbers >= 11 && lastTwoNumbers <= 19 {
-            return "\(completedDays) дней"
-        }
         
-        switch lasyNumber {
-        case 1:
-            return "\(completedDays) день"
-        case 2, 3, 4:
-            return "\(completedDays) дня"
-        default:
-            return "\(completedDays) дней"
+        if lasyNumber == 1 && lastTwoNumbers != 11 {
+            return "\(completedDays) \(LocalizationHelper.localizedString("day"))"
+        } else if lasyNumber >= 2 && lastTwoNumbers <= 4 && (lastTwoNumbers < 10 || lastTwoNumbers >= 20) {
+            return "\(completedDays) \(LocalizationHelper.localizedString("days"))"
+        } else {
+            return "\(completedDays) \(LocalizationHelper.localizedString("daysMany"))"
         }
     }
     
@@ -221,4 +218,3 @@ final class TrackerCollection: UICollectionViewCell {
         }
     }
 }
-

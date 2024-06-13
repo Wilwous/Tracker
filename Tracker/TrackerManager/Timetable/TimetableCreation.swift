@@ -22,7 +22,9 @@ final class TimetableCreation: UIViewController {
     
     private lazy var timetableLabel: UILabel = {
         let timetable = UILabel()
-        timetable.text = "Расписание"
+        timetable.text = LocalizationHelper.localizedString(
+            "timetable"
+        )
         timetable.textColor = .ypBlackDay
         timetable.font = .systemFont(ofSize: 16, weight: .medium)
         
@@ -48,8 +50,11 @@ final class TimetableCreation: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let done = UIButton(type: .system)
-        done.setTitle("Готово", for: .normal)
-        done.setTitleColor(.white, for: .normal)
+        done.setTitle(
+            LocalizationHelper.localizedString("doneButtonText"),
+            for: .normal
+        )
+        done.setTitleColor(.ypWhiteDay, for: .normal)
         done.backgroundColor = .ypBlackDay
         done.layer.cornerRadius = 16
         done.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)

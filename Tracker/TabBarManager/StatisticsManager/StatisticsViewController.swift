@@ -12,7 +12,7 @@ final class StatisticsViewController: UIViewController {
     // MARK: - UI Components
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Статистика"
+        label.text = LocalizationHelper.localizedString("statistic")
         label.font = .boldSystemFont(ofSize: 34)
         label.textColor = .ypBlackDay
         label.contentMode = .scaleAspectFit
@@ -29,7 +29,7 @@ final class StatisticsViewController: UIViewController {
     
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
-        label.text = "Анализировать пока нечего"
+        label.text = LocalizationHelper.localizedString("emptyStatisticText")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .ypBlackDay
         

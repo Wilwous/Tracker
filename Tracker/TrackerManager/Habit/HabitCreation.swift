@@ -19,7 +19,7 @@ protocol HabitCreationDelegate: AnyObject {
 }
 
 final class HabitCreation: UIViewController {
-
+    
     // MARK: - Delegate
     weak var timetableCreationDelegate: TimetableCreationDelegate?
     weak var habitCreationDelegate: HabitCreationDelegate?
@@ -40,9 +40,11 @@ final class HabitCreation: UIViewController {
     ]
     
     private var colors: [UIColor] = [
-        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5,
-        .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10,
-        .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
+        .colorSelection1, .colorSelection2, .colorSelection3,
+        .colorSelection4, .colorSelection5, .colorSelection6,
+        .colorSelection7, .colorSelection8, .colorSelection9,
+        .colorSelection10, .colorSelection11, .colorSelection12,
+        .colorSelection13, .colorSelection14, .colorSelection15,
         .colorSelection16, .colorSelection17, .colorSelection18
     ]
     
@@ -55,12 +57,18 @@ final class HabitCreation: UIViewController {
     }()
     
     private lazy var titleLabel = CustomTitleLabel(
-        text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
+        text: isHabitTracker ? LocalizationHelper.localizedString(
+            "newHabit") :
+            LocalizationHelper.localizedString(
+                "newIrregularEvent"
+            )
     )
     
     private lazy var nameTextField: CustomTextField = {
         let textField = CustomTextField(
-            placeholder: "Введите название трекера"
+            placeholder: LocalizationHelper.localizedString(
+                "enterTrackerName"
+            )
         )
         
         return textField
@@ -68,7 +76,7 @@ final class HabitCreation: UIViewController {
     
     private lazy var limitMessage: UILabel = {
         let limit = UILabel()
-        limit.text = "Ограничение 38 символов"
+        limit.text = LocalizationHelper.localizedString("limitMessage")
         limit.textColor = .ypRed
         limit.textAlignment = .center
         limit.font = .systemFont(ofSize: 17, weight: .regular)
@@ -106,8 +114,9 @@ final class HabitCreation: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.showsVerticalScrollIndicator = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(HabitTableView.self,
-                           forCellReuseIdentifier: HabitTableView.cellID
+        tableView.register(
+            HabitTableView.self,
+            forCellReuseIdentifier: HabitTableView.cellID
         )
         return tableView
     }()
@@ -170,7 +179,10 @@ final class HabitCreation: UIViewController {
     
     private lazy var creationButton: UIButton = {
         let creation = UIButton()
-        creation.setTitle("Создать", for: .normal)
+        creation.setTitle(
+            LocalizationHelper.localizedString("create"),
+            for: .normal
+        )
         creation.backgroundColor = .ypGray
         creation.layer.cornerRadius = 16
         creation.translatesAutoresizingMaskIntoConstraints = false
@@ -183,7 +195,10 @@ final class HabitCreation: UIViewController {
     
     private lazy var cancelButton: UIButton = {
         let cancel = UIButton()
-        cancel.setTitle("Отменить", for: .normal)
+        cancel.setTitle(
+            LocalizationHelper.localizedString("cancel"),
+            for: .normal
+        )
         cancel.setTitleColor(.red, for: .normal)
         cancel.backgroundColor = .ypWhiteDay
         cancel.layer.borderWidth = 1
@@ -200,7 +215,10 @@ final class HabitCreation: UIViewController {
     // MARK: - Initialization
     init(isHabit: Bool) {
         self.isHabitTracker = isHabit
-        self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
+        self.params = GeometricParams(
+            cellCount: 6, leftInsets: 2,
+            rightInsets: 2, cellSpacing: 5
+        )
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -316,7 +334,7 @@ final class HabitCreation: UIViewController {
             showAlert(with: "Error", message: "Please enter tracker name.")
             return
         }
-
+        
         let codableColor = CodableColor(color: color)
         
         let timetable: [WeekDay]
@@ -373,10 +391,16 @@ extension HabitCreation: UITableViewDataSource {
         }
         
         if indexPath.row == 0 {
-            cell.configureCell(with: "Категория", subtitle: selectedCategory, isFirstCell: true)
+            cell.configureCell(
+                with: LocalizationHelper.localizedString("category"),
+                subtitle: selectedCategory, isFirstCell: true
+            )
         } else if indexPath.row == 1 {
-            let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
-            cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
+            let timemable = selectedWeekDays.isEmpty ? "" :
+            selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
+            cell.configureCell(with: LocalizationHelper.localizedString("timetable"),
+                               subtitle: timemable, isFirstCell: false
+            )
         }
         cell.selectionStyle = . none
         
@@ -472,7 +496,8 @@ extension HabitCreation: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let totalSpacing = (params.cellSpacing * CGFloat(params.cellCount - 1)) + params.leftInsets + params.rightInsets
+        let totalSpacing = (params.cellSpacing * CGFloat(params.cellCount - 1)
+        ) + params.leftInsets + params.rightInsets
         let availableWidth = collectionView.bounds.width - totalSpacing
         let widthPerItem = availableWidth / CGFloat(params.cellCount)
         return CGSize(width: widthPerItem, height: widthPerItem)
@@ -509,7 +534,9 @@ extension HabitCreation: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UICollectionViewDataSource
 extension HabitCreation: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int
+    ) -> Int {
         18
     }
     
@@ -517,8 +544,10 @@ extension HabitCreation: UICollectionViewDataSource {
                         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         if collectionView == emojiCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCollection.idetnifier,
-                                                                for: indexPath) as? EmojiCollection else {
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmojiCollection.idetnifier,
+                for: indexPath
+            ) as? EmojiCollection else {
                 assertionFailure("Could not cast to EmojiCell")
                 return UICollectionViewCell()
             }
@@ -527,8 +556,10 @@ extension HabitCreation: UICollectionViewDataSource {
             cell.emojiLabel.text = emoji
             return cell
         } else if collectionView == colorCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCollection.idetnifier,
-                                                                for: indexPath) as? ColorCollection else {
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: ColorCollection.idetnifier,
+                for: indexPath
+            ) as? ColorCollection else {
                 assertionFailure("Could not cast to ColorCell")
                 return UICollectionViewCell()
             }
@@ -560,9 +591,9 @@ extension HabitCreation: UICollectionViewDataSource {
         }
         
         if collectionView == emojiCollectionView {
-            header.configure(with: "Emoji")
+            header.configure(with: LocalizationHelper.localizedString("emoji"))
         } else if collectionView == colorCollectionView {
-            header.configure(with: "Цвет")
+            header.configure(with: LocalizationHelper.localizedString("color"))
         }
         
         return header

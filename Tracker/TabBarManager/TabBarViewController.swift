@@ -20,19 +20,20 @@ final class TabBarViewController: UITabBarController {
         let statisticsVC = StatisticsViewController()
         
         trackerVC.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: LocalizationHelper.localizedString("trackers"),
             image: UIImage(named: "trackersIcon"),
             selectedImage: UIImage(named: "trackersIcon")
         )
         
         statisticsVC.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: LocalizationHelper.localizedString("statistic"),
             image: UIImage(named: "statsIcon"),
             selectedImage: UIImage(named: "statsIcon")
         )
         
-        viewControllers = [createNavigationController(rootViewController: trackerVC),
-                           createNavigationController(rootViewController: statisticsVC)
+        viewControllers = [
+            createNavigationController(rootViewController: trackerVC),
+            createNavigationController(rootViewController: statisticsVC)
         ]
     }
     

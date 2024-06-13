@@ -33,7 +33,7 @@ final class TrackerViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.delegate = self
-        searchBar.placeholder = "Поиск"
+        searchBar.placeholder = LocalizationHelper.localizedString("search")
         searchBar.searchBarStyle = .minimal
         
         return searchBar
@@ -50,9 +50,11 @@ final class TrackerViewController: UIViewController {
         let datePickerItem = UIBarButtonItem(customView: datePicker)
         navigationItem.rightBarButtonItem = datePickerItem
         
-        datePicker.addTarget(self,
-                             action: #selector(dateSettingTapped),
-                             for: .valueChanged)
+        datePicker.addTarget(
+            self,
+            action: #selector(dateSettingTapped),
+            for: .valueChanged
+        )
         
         return datePicker
     }()
@@ -63,7 +65,10 @@ final class TrackerViewController: UIViewController {
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(
+            frame: .zero, collectionViewLayout: layout
+        )
+        collectionView.backgroundColor = .ypWhiteDay
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -81,7 +86,10 @@ final class TrackerViewController: UIViewController {
     
     // MARK: - Initialization
     init() {
-        self.params = GeometricParams(cellCount: 2, leftInsets: 16, rightInsets: 16, cellSpacing: 9)
+        self.params = GeometricParams(
+            cellCount: 2, leftInsets: 16,
+            rightInsets: 16, cellSpacing: 9
+        )
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -164,20 +172,24 @@ final class TrackerViewController: UIViewController {
     private func settingNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        title = "Трекеры"
+        title = LocalizationHelper.localizedString("trackers")
         
         let addTrackerButton = UIButton(type: .custom)
-        addTrackerButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 0)
-        addTrackerButton.addTarget(self,
-                                   action: #selector(addTrackerButtonTapped),
-                                   for: .touchUpInside)
+        addTrackerButton.imageEdgeInsets = UIEdgeInsets(
+            top: 0, left: -20, bottom: 0, right: 0
+        )
+        
+        addTrackerButton.addTarget(
+            self,
+            action: #selector(addTrackerButtonTapped),
+            for: .touchUpInside
+        )
         
         let addTrackerButtonItem = UIBarButtonItem(customView: addTrackerButton)
         navigationItem.leftBarButtonItem = addTrackerButtonItem
         
-        if let addTrakerImage = UIImage(named: "addTracker")?.withRenderingMode(.alwaysOriginal) {
-            addTrackerButton.setImage(addTrakerImage, for: .normal)
-        }
+        let addTrakerImage = UIImage(named: "addTracker")?.withRenderingMode(.alwaysOriginal)
+        addTrackerButton.setImage(addTrakerImage, for: .normal)
     }
     
     private func addElements() {
@@ -231,7 +243,7 @@ extension TrackerViewController: UISearchControllerDelegate, UISearchBarDelegate
     }
 }
 
-
+// MARK: - TrackerCollectionDelegate
 extension TrackerViewController: TrackerCollectionDelegate {
     func markTrackerAsCompleted(id: UUID, at indexPath: IndexPath) {
         let selectedDate = dateSetting.date
@@ -242,8 +254,12 @@ extension TrackerViewController: TrackerCollectionDelegate {
         }
         
         if let tracker = CoreDataStack.shared.trackerStore.fetchTrackerByID(id: id) {
-            if !CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(tracker: tracker, date: selectedDate) {
-                CoreDataStack.shared.trackerRecordStore.addTrackerRecord(for: tracker, date: selectedDate)
+            if !CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(
+                tracker: tracker, date: selectedDate
+            ) {
+                CoreDataStack.shared.trackerRecordStore.addTrackerRecord(
+                    for: tracker, date: selectedDate
+                )
                 completedTrackerIds.insert(id)
                 if tracker.timetable?.isEmpty ?? true {
                     completedIrregularEvents.insert(id)
@@ -262,8 +278,12 @@ extension TrackerViewController: TrackerCollectionDelegate {
         }
         
         if let tracker = CoreDataStack.shared.trackerStore.fetchTrackerByID(id: id) {
-            if CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(tracker: tracker, date: selectedDate) {
-                CoreDataStack.shared.trackerRecordStore.deleteTrackerRecord(for: tracker, date: selectedDate)
+            if CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(
+                tracker: tracker, date: selectedDate
+            ) {
+                CoreDataStack.shared.trackerRecordStore.deleteTrackerRecord(
+                    for: tracker, date: selectedDate
+                )
                 completedTrackerIds.remove(id)
                 if tracker.timetable?.isEmpty ?? true {
                     completedIrregularEvents.remove(id)
@@ -275,7 +295,9 @@ extension TrackerViewController: TrackerCollectionDelegate {
     
     private func isTrackerCompleted(id: UUID) -> Bool {
         if let tracker = CoreDataStack.shared.trackerStore.fetchTrackerByID(id: id) {
-            return CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(tracker: tracker, date: dateSetting.date)
+            return CoreDataStack.shared.trackerRecordStore.isTrackerCompletedToday(
+                tracker: tracker, date: dateSetting.date
+            )
         }
         return false
     }
@@ -314,7 +336,9 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
         let header = TrackerHeader()
         header.titleLabel.text = categories[section].headline
         let size = header.systemLayoutSizeFitting(
-            CGSize(width: collectionView.frame.width, height: UIView.layoutFittingCompressedSize.height),
+            CGSize(width: collectionView.frame.width,
+                   height: UIView.layoutFittingCompressedSize.height
+                  ),
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel
         )

@@ -12,7 +12,9 @@ final class TrackersViewStubs: UIView {
     // MARK: - Private Properties
     private lazy var willTrackLabel: UILabel = {
         let trackLabel = UILabel()
-        trackLabel.text = "Что будем отслеживать?"
+        trackLabel.text = LocalizationHelper.localizedString(
+            "willTrackLabel"
+        )
         trackLabel.font = .systemFont(ofSize: 12, weight: .medium)
         trackLabel.textColor = .ypBlackDay
         
@@ -20,7 +22,9 @@ final class TrackersViewStubs: UIView {
     }()
     
     private lazy var imagesViewStub = {
-        let imageView = UIImageView(image: UIImage(named: "error1"))
+        let imageView = UIImageView(image: UIImage(
+            named: "error1")
+        )
         imageView.contentMode = .scaleAspectFit
         
         return imageView

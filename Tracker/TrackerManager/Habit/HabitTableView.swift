@@ -112,7 +112,8 @@ extension HabitTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 1 {
             let selectedCell = tableView.cellForRow(at: indexPath) as? HabitTableView
-            if let titleText = selectedCell?.titleLabel.text, titleText == "Расписание" {
+            if let titleText = selectedCell?.titleLabel.text,
+               titleText == LocalizationHelper.localizedString("timetable") {
                 delegate?.didSelectTimetable()
             }
         }

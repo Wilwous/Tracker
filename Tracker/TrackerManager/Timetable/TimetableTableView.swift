@@ -40,9 +40,10 @@ final class TimetableTableView: UITableViewCell {
     private lazy var daySwitch: UISwitch = {
         let daySwitch = UISwitch()
         daySwitch.onTintColor = .ypBlue
-        daySwitch.addTarget(self,
-                            action: #selector(daySwitchTapped),
-                            for: .valueChanged)
+        daySwitch.addTarget(
+            self,
+            action: #selector(daySwitchTapped),
+            for: .valueChanged)
         
         return daySwitch
     }()
@@ -60,12 +61,15 @@ final class TimetableTableView: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configurationCell(with weekDay: WeekDay, isLastCell: Bool, isSelected: Bool) {
-        self.weekDay = weekDay
-        weekDayLabel.text = weekDay.rawValue
-        customSeparatorView.isHidden = isLastCell
-        daySwitch.isOn = isSelected
-    }
+    func configurationCell(
+        with weekDay: WeekDay,
+        isLastCell: Bool,
+        isSelected: Bool) {
+            self.weekDay = weekDay
+            weekDayLabel.text = weekDay.asText()
+            customSeparatorView.isHidden = isLastCell
+            daySwitch.isOn = isSelected
+        }
     
     // MARK: - Setup View
     private func addElements() {
@@ -99,4 +103,3 @@ final class TimetableTableView: UITableViewCell {
         delegate?.daySwitchDidTapped(to: sender.isOn, of: weekDay)
     }
 }
-

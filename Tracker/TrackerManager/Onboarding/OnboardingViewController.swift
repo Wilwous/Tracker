@@ -12,6 +12,7 @@ final class OnboardingViewController: UIPageViewController {
     // MARK: - Closures
     var onContinue: (() -> Void)?
     
+    // MARK: - Private Properties
     private lazy var pageControl: UIPageControl = {
         let page = UIPageControl()
         page.currentPage = 0
@@ -24,7 +25,11 @@ final class OnboardingViewController: UIPageViewController {
     
     private lazy var continueButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitle(
+            LocalizationHelper.localizedString(
+                "onboardingButtonText"),
+            for: .normal
+        )
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .black

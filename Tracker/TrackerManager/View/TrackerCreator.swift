@@ -15,11 +15,13 @@ final class TrackerCreator: UIViewController {
     
     // MARK: - Private Properties
     private lazy var creationLabel = CustomTitleLabel(
-        text: "Создание трекера"
+        text: LocalizationHelper.localizedString("trackerCreation")
     )
     
     private lazy var creationHabbitButton: CustomButton = {
-        let button = CustomButton(title: "Привычка")
+        let button = CustomButton(
+            title: LocalizationHelper.localizedString("habit")
+        )
         button.addTarget(
             self,
             action: #selector(creationHabbitButtonTapped),
@@ -30,7 +32,9 @@ final class TrackerCreator: UIViewController {
     }()
     
     private lazy var сreatingIrregularEvents: CustomButton = {
-        let button = CustomButton(title: "Нерегулярное событие")
+        let button = CustomButton(
+            title:  LocalizationHelper.localizedString("irregularEvent")
+        )
         button.addTarget(
             self, action: #selector(сreatingIrregularEventsTapped),
             for: .touchUpInside
