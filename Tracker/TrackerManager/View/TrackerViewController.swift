@@ -615,10 +615,6 @@ extension TrackerViewController: UICollectionViewDataSource {
                 let tracker = self.filteredCategories[indexPath.section].trackers[indexPath.row]
                 self.deleteTracker(trackerId: tracker.id)
             }
-    
-            CoreDataStack.shared.trackerRecordStore.deleteRecordsForTracker(with: tracker.id)
-            CoreDataStack.shared.trackerStore.deleteTracker(trackerId: tracker.id)
-            self?.reload()
             
             let cancelAction = UIAlertAction(
                 title: LocalizationHelper.localizedString("cancel"), style: .cancel
