@@ -12,7 +12,7 @@ final class OnboardingViewController: UIPageViewController {
     // MARK: - Closures
     var onContinue: (() -> Void)?
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     private lazy var pageControl: UIPageControl = {
         let page = UIPageControl()
         page.currentPage = 0

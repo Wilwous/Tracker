@@ -9,17 +9,9 @@ import UIKit
 
 final class StatisticsViewController: UIViewController {
     
-    // MARK: - UI Components
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = LocalizationHelper.localizedString("statistic")
-        label.font = .boldSystemFont(ofSize: 34)
-        label.textColor = .ypBlack
-        label.contentMode = .scaleAspectFit
-        
-        return label
-    }()
+    private var completedTrackerCount: Int = 0
     
+    // MARK: - UI Components
     private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error3"))
         image.contentMode = .scaleAspectFit
@@ -36,6 +28,15 @@ final class StatisticsViewController: UIViewController {
         return label
     }()
     
+    private lazy var analyticsController: AnalyticsController = {
+        let view = AnalyticsController()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.configure(
+            value: 0, description: LocalizationHelper.localizedString("completedTrackers")
+        )
+        return view
+    }()
+    
     // MARK: - Initialization
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -49,15 +50,22 @@ final class StatisticsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhite
+        settingNavigationBar()
         addElemens()
         layoutConstraint()
+        updateUI()
+    }
+    
+    private func settingNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = LocalizationHelper.localizedString("statistic")
     }
     
     // MARK: - Setup Methods
     private func addElemens() {
-        [titleLabel,
-         emptyStateImageView,
-         emptyStateLabel
+        [emptyStateImageView,
+         emptyStateLabel,
+         analyticsController
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
@@ -66,12 +74,36 @@ final class StatisticsViewController: UIViewController {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            emptyStateImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyStateImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: +8),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+            
+            emptyStateImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            analyticsController.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 77),
+            analyticsController.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            analyticsController.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            analyticsController.heightAnchor.constraint(equalToConstant: 90)
         ])
+    }
+    
+    private func updateUI() {
+//        completedTrackerCount = CoreDataStack.shared.trackerRecordStore.getCompletedTrackerCount()
+        
+        analyticsController.configure(
+            value: completedTrackerCount, description: LocalizationHelper.localizedString("completedTrackers")
+        )
+        
+        let isEmpty = completedTrackerCount == 0
+        
+        emptyStateLabel.isHidden = !isEmpty
+        emptyStateImageView.isHidden = !isEmpty
+        analyticsController.isHidden = isEmpty
+    }
+}
+
+extension StatisticsViewController: TrackerRecordStoreDelegate {
+    func trackerRecordStoreDidChange() {
+        updateUI()
     }
 }

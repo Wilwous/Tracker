@@ -14,7 +14,7 @@ final class HabitTableView: UITableViewCell {
     // MARK: - Delegate
     weak var delegate: HabitTableViewDelegate?
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     private lazy var titleLabel: UILabel = {
         let title = UILabel()
         title.textColor = .ypBlack

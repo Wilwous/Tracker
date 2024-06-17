@@ -13,7 +13,7 @@ final class TrackerCreator: UIViewController {
     weak var trackerViewController: TrackerViewController?
     weak var habitCreationDelegate: HabitCreationDelegate?
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     private lazy var creationLabel = CustomTitleLabel(
         text: LocalizationHelper.localizedString("trackerCreation")
     )

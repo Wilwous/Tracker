@@ -22,9 +22,10 @@ final class CategoryViewController: UIViewController {
     
     // MARK: - Private Properties
     private let viewModel = CategoryViewModel()
-    
     private var selectedIndexPath: IndexPath?
+    private var selectedCategory: String?
     
+    // MARK: - UI Components
     private lazy var titleLabel: CustomTitleLabel = {
         let label = CustomTitleLabel(
             text: LocalizationHelper.localizedString("category")
@@ -58,7 +59,8 @@ final class CategoryViewController: UIViewController {
     
     private lazy var addCategoryButton: CustomButton = {
         let button = CustomButton(
-            title: LocalizationHelper.localizedString("addCategoryButtonText")
+            title: LocalizationHelper.localizedString(
+                "addCategoryButtonText")
         )
         
         button.addTarget(

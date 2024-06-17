@@ -20,6 +20,7 @@ final class TimetableCreation: UIViewController {
     // MARK: - Private properties
     private var selectedWeekDay: Set<WeekDay> = []
     
+    // MARK: - UI Components
     private lazy var timetableLabel: UILabel = {
         let timetable = UILabel()
         timetable.text = LocalizationHelper.localizedString(

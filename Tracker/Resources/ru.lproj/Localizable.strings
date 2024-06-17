@@ -14,7 +14,11 @@
 //MARK: - TrackerViewController
 "trackers" = "Трекеры";
 "search" = "Поиск";
-"willTrackLabel" = "Что будем отслеживать?";
+"labelStub" = "Что будем отслеживать?";
+"filtres" = "Фильтры";
+"trackerRemovalAlert" = "Уверены что хотите удалить трекер?";
+"delete" = "Удалить";
+"nothing found" = "Ничего не найдено"
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Создание трекера";

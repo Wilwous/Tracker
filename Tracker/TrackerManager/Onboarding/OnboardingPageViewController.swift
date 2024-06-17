@@ -12,7 +12,7 @@ final class OnboardingPageViewController: UIViewController {
     // MARK: - Public Properties
     let page: OnboardingPage
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     private lazy var backgroundImageView: UIImageView = {
         let view = UIImageView(
             image: UIImage(named: page.imageName)

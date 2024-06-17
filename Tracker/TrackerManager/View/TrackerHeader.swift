@@ -11,7 +11,7 @@ final class TrackerHeader: UICollectionReusableView {
     
     static let headerIdentifier = String(describing: TrackerHeader.self)
     
-    // MARK: - Public Properties
+    // MARK: - UI Components
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 19)

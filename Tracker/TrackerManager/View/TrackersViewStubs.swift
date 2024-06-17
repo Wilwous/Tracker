@@ -9,8 +9,8 @@ import UIKit
 
 final class TrackersViewStubs: UIView {
     
-    // MARK: - Private Properties
-    private lazy var willTrackLabel: UILabel = {
+    // MARK: - UI Components
+    private lazy var labelStub: UILabel = {
         let trackLabel = UILabel()
         trackLabel.text = LocalizationHelper.localizedString(
             "willTrackLabel"
@@ -41,9 +41,18 @@ final class TrackersViewStubs: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(with type: UpdateStubsView, labelHeight: CGFloat) {
+        imagesViewStub.image = type.image
+        labelStub.text = type.text
+        
+        NSLayoutConstraint.activate([
+            labelStub.heightAnchor.constraint(equalToConstant: labelHeight)
+        ])
+    }
+    
     // MARK: - Setup View
     private func addElements() {
-        [willTrackLabel,
+        [labelStub,
          imagesViewStub
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -53,13 +62,13 @@ final class TrackersViewStubs: UIView {
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
-            willTrackLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            willTrackLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            labelStub.centerXAnchor.constraint(equalTo: centerXAnchor),
+            labelStub.centerYAnchor.constraint(equalTo: centerYAnchor),
             
             imagesViewStub.centerXAnchor.constraint(equalTo: centerXAnchor),
-            imagesViewStub.bottomAnchor.constraint(equalTo: willTrackLabel.topAnchor, constant: -8),
+            imagesViewStub.bottomAnchor.constraint(equalTo: labelStub.topAnchor, constant: -8),
             imagesViewStub.heightAnchor.constraint(equalToConstant: 80),
-            imagesViewStub.widthAnchor.constraint(equalToConstant: 80),
+            imagesViewStub.widthAnchor.constraint(equalToConstant: 80)
         ])
     }
 }

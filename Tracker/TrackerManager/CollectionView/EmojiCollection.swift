@@ -12,7 +12,7 @@ final class EmojiCollection: UICollectionViewCell {
     // MARK: - Properties
     static let idetnifier = "EmojiCollection"
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.text = "🤡"
@@ -33,6 +33,7 @@ final class EmojiCollection: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Public Metods
     func highlightEmoji() {
         contentView.backgroundColor = .ypLightGray
         contentView.layer.cornerRadius = 16

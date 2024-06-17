@@ -14,7 +14,11 @@
 //MARK: - TrackerViewController
 "trackers" = "Trackers";
 "search" = "Search";
-"willTrackLabel" = "What will track?";
+"labelStub" = "What will track?";
+"filtres" = "Filtres";
+"trackerRemovalAlert" = "Are you sure you want to delete the tracker?";
+"delete" = "Delete";
+"nothing found" = "Nothing found"
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Create tracker";

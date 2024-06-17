@@ -21,7 +21,7 @@ final class TrackerRecordStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
+    private var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -42,6 +42,7 @@ final class TrackerRecordStore: NSObject {
     func deleteTrackerRecord(for trackerCoreData: TrackerCoreData, date: Date) {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "tracker == %@ AND date == %@", trackerCoreData, date as CVarArg)
+        
         do {
             let results = try managedObjectContext.fetch(fetchRequest)
             for result in results {
@@ -53,7 +54,7 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    func isTrackerCompletedToday(tracker: TrackerCoreData, date: Date) -> Bool {
+    func isTrackerCompletedTodayStore(tracker: TrackerCoreData, date: Date) -> Bool {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "tracker == %@ AND date == %@", tracker, date as CVarArg)
         
@@ -66,24 +67,51 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    func fetchAllCompletedTrackers() -> [TrackerRecord] {
+    func deleteRecordsForTracker(with trackerID: UUID) {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "tracker.id == %@", trackerID as CVarArg)
+        
+        do {
+            let records = try managedObjectContext.fetch(fetchRequest)
+            for record in records {
+                managedObjectContext.delete(record)
+            }
+            saveContext()
+            delegate?.trackerRecordStoreDidChange()
+        } catch {
+            print("Failed to delete tracker records: \(error)")
+        }
+    }
+    
+    func completedDaysCountStore(for tracker: TrackerCoreData) -> Int {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "tracker == %@", tracker)
+        
         do {
             let results = try managedObjectContext.fetch(fetchRequest)
-            return results.map { trackerRecordCoreData in
-                return TrackerRecord(id: trackerRecordCoreData.tracker?.id ?? UUID(),
-                                     date: trackerRecordCoreData.date ?? Date())
-            }
+            return results.count
         } catch {
-            print("Failed to fetch completed trackers: \(error)")
-            return []
+            print("Failed to fetch tracker records: \(error)")
+            return 0
+        }
+        
+        func fetchCompletedTrackerCount() -> Int {
+            let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+            
+            do {
+                let records = try managedObjectContext.fetch(fetchRequest)
+                return records.count
+            } catch {
+                print("Failed to fetch tracker records: \(error)")
+                return 0
+            }
         }
     }
     
     // MARK: - Private Methods
     private func setupFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
         
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,

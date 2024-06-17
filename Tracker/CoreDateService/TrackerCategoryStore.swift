@@ -21,7 +21,7 @@ final class TrackerCategoryStore: NSObject {
     
     // MARK: - Private Properties
     private let managedObjectContext: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>?
     
     // MARK: - Initialization
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -31,25 +31,18 @@ final class TrackerCategoryStore: NSObject {
     }
     
     // MARK: - Public Methods
-    func fetchCategoryByName(name: String) -> TrackerCategoryCoreData? {
-        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "title == %@", name)
-        
-        do {
-            let results = try managedObjectContext.fetch(fetchRequest)
-            return results.first
-        } catch {
-            print("Failed to fetch category by name: \(error)")
-            return nil
+    func createCategory(title: String) {
+        if fetchCategory(by: title) == nil {
+            let category = TrackerCategoryCoreData(context: managedObjectContext)
+            category.title = title
+            saveContext()
         }
     }
     
-    func createCategory(title: String) -> TrackerCategoryCoreData {
-        let category = TrackerCategoryCoreData(context: managedObjectContext)
-        category.title = title
-        saveContext()
-        
-        return category
+    func fetchCategory(by title: String) -> TrackerCategoryCoreData? {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", title)
+        return try? managedObjectContext.fetch(request).first
     }
     
     func fetchAllCategories() -> [TrackerCategory] {
@@ -65,8 +58,8 @@ final class TrackerCategoryStore: NSObject {
     
     // MARK: - Private Methods
     private func setupFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,

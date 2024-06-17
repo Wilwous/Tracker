@@ -14,6 +14,18 @@ protocol TrackerCollectionDelegate: AnyObject {
 
 final class TrackerCollection: UICollectionViewCell {
     
+    // MARK: - Context Menu
+    var onPin: (() -> Void)?
+    var onEdit: (() -> Void)?
+    var onDelete: (() -> Void)?
+    
+    var isPinned: Bool = false {
+        didSet {
+            pinImageView .isHidden = !isPinned
+            pinActionTitle = isPinned ? "Открепить" : "Закрепить"
+        }
+    }
+    
     static let cellIdetnifier = "TrackerCollection"
     
     weak var delegate: TrackerCollectionDelegate?
@@ -22,7 +34,9 @@ final class TrackerCollection: UICollectionViewCell {
     private var isCompletedToday = false
     private var trackerId: UUID?
     private var indexPath: IndexPath?
+    private var pinActionTitle = "Закрепить"
     
+    // MARK: - UI Components
     private lazy var emojiLabel: UILabel = {
         let emoji = UILabel()
         emoji.textAlignment = .center
@@ -40,7 +54,7 @@ final class TrackerCollection: UICollectionViewCell {
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .ypWhite
+        label.textColor = .white
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textAlignment = .left
         label.numberOfLines = 0
@@ -75,18 +89,27 @@ final class TrackerCollection: UICollectionViewCell {
     private lazy var plusImage: UIImage? = {
         let image = UIImage(systemName: "plus")
         let coloredImage = image?.withTintColor(.ypWhite, renderingMode: .alwaysOriginal)
-        let configuredImage = coloredImage?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold))
-        
+        let configuredImage = coloredImage?.withConfiguration(
+            UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+        )
         return configuredImage
+    }()
+    
+    private lazy var pinImageView : UIImageView = {
+        let pin = UIImageView()
+        pin.image = UIImage(named: "pin")
+        
+        return pin
     }()
     
     private lazy var completeButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .colorSelection18
         button.setImage(plusImage, for: .normal)
-        button.addTarget(self,
-                         action: #selector(completeButtonTapped),
-                         for: .touchUpInside
+        button.addTarget(
+            self,
+            action: #selector(completeButtonTapped),
+            for: .touchUpInside
         )
         
         return button
@@ -97,6 +120,7 @@ final class TrackerCollection: UICollectionViewCell {
         super.init(frame: frame)
         addElements()
         layoutConstraint()
+        setupContextMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -121,11 +145,13 @@ final class TrackerCollection: UICollectionViewCell {
         with tracker: Tracker,
         isCompletedToday: Bool,
         completedDays: Int,
-        indexPath: IndexPath
+        indexPath: IndexPath,
+        isPinned: Bool
     ) {
         self.trackerId = tracker.id
         self.isCompletedToday = isCompletedToday
         self.indexPath = indexPath
+        self.isPinned = isPinned
         
         emojiLabel.text = tracker.emoji
         nameLabel.text = tracker.name
@@ -141,7 +167,7 @@ final class TrackerCollection: UICollectionViewCell {
     }
     
     // MARK: - Private Methods
-    private func convertCompletedDays(_ completedDays: Int) -> String {
+    func convertCompletedDays(_ completedDays: Int) -> String {
         let lasyNumber = completedDays % 10
         let lastTwoNumbers = completedDays % 100
         
@@ -154,18 +180,31 @@ final class TrackerCollection: UICollectionViewCell {
         }
     }
     
+    // MARK: - ContextMenu
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        topBackgroundView.addInteraction(interaction)
+    }
+    
     // MARK: - Setup View
     private func addElements() {
         [topBackgroundView,
          bottomBackgroundView,
-         emojiBackgroundView,
-         emojiLabel,
-         nameLabel,
          daysCounterLabel,
-         completeButton
+         completeButton,
+         pinImageView
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
+        }
+        
+        [emojiBackgroundView,
+         emojiLabel,
+         nameLabel,
+         pinImageView
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            topBackgroundView.addSubview($0)
         }
     }
     
@@ -201,6 +240,11 @@ final class TrackerCollection: UICollectionViewCell {
             
             daysCounterLabel.centerYAnchor.constraint(equalTo: completeButton.centerYAnchor),
             daysCounterLabel.leadingAnchor.constraint(equalTo: bottomBackgroundView.leadingAnchor, constant: 12),
+            
+            pinImageView .topAnchor.constraint(equalTo: topBackgroundView.topAnchor, constant: 12),
+            pinImageView .trailingAnchor.constraint(equalTo: topBackgroundView.trailingAnchor, constant: -4),
+            pinImageView .widthAnchor.constraint(equalToConstant: 24),
+            pinImageView .heightAnchor.constraint(equalToConstant: 24)
         ])
     }
     
@@ -215,6 +259,30 @@ final class TrackerCollection: UICollectionViewCell {
             delegate?.markTrackerAsUncompleted(id: trackerId, at: indexPath)
         } else {
             delegate?.markTrackerAsCompleted(id: trackerId, at: indexPath)
+        }
+    }
+}
+
+// MARK: - UIContextMenuInteractionDelegate
+extension TrackerCollection: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction,
+                                configurationForMenuAtLocation location: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+            guard let self = self else { return nil }
+            
+            let pinAction = UIAction(title: self.pinActionTitle) { [weak self] action in
+                self?.onPin?()
+            }
+            
+            let editAction = UIAction(title: "Редактировать") { [weak self] action in
+                self?.onEdit?()
+            }
+            
+            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] action in
+                self?.onDelete?()
+            }
+            return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
         }
     }
 }

@@ -26,12 +26,14 @@ final class HabitCreation: UIViewController {
     
     // MARK: - Private Properties
     private let params: GeometricParams
-    private var isHabitTracker: Bool
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
+    private var existingTracker: Tracker?
     private var selectedWeekDays: [WeekDay] = []
     private var selectedCategory: String = ""
-    private var isIrregularEvent: Bool = false
+    private var isHabitTracker: Bool
+    private var isEditingMode: Bool
+    private var existingTrackerId: UUID?
     
     private var emojis: [String] = [
         "😀", "😻", "🌺", "🐶", "❤️", "😱",
@@ -48,6 +50,7 @@ final class HabitCreation: UIViewController {
         .colorSelection16, .colorSelection17, .colorSelection18
     ]
     
+    // MARK: - UI Components
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .ypWhite
@@ -57,11 +60,9 @@ final class HabitCreation: UIViewController {
     }()
     
     private lazy var titleLabel = CustomTitleLabel(
-        text: isHabitTracker ? LocalizationHelper.localizedString(
-            "newHabit") :
-            LocalizationHelper.localizedString(
-                "newIrregularEvent"
-            )
+        text: isEditingMode ? "Редактирование привычки" :
+            (isHabitTracker ? LocalizationHelper.localizedString("newHabit") :
+                LocalizationHelper.localizedString("newIrregularEvent"))
     )
     
     private lazy var nameTextField: CustomTextField = {
@@ -213,13 +214,26 @@ final class HabitCreation: UIViewController {
         return cancel
     }()
     
+    private lazy var completedDaysLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .boldSystemFont(ofSize: 32)
+        label.textAlignment = .center
+        label.textColor = .ypBlack
+        label.isHidden = !isEditingMode
+        return label
+    }()
+    
     // MARK: - Initialization
-    init(isHabit: Bool) {
+    init(isHabit: Bool, isEditing: Bool = false, existingTracker: Tracker? = nil) {
+        self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
         self.isHabitTracker = isHabit
-        self.params = GeometricParams(
-            cellCount: 6, leftInsets: 2,
-            rightInsets: 2, cellSpacing: 5
-        )
+        self.isEditingMode = isEditing
+        self.existingTracker = existingTracker
+        
+        if let existingTracker = existingTracker {
+            self.selectedCategory = existingTracker.initialCategory ?? ""
+        }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -233,6 +247,9 @@ final class HabitCreation: UIViewController {
         addElements()
         layoutConstraint()
         settingSpacing()
+        isEditingModeLoad()
+        getСategoryEditing()
+        updateButtonText()
         emojiCollectionView.isScrollEnabled = false
         colorCollectionView.isScrollEnabled = false
         nameTextField.delegate = self
@@ -255,6 +272,7 @@ final class HabitCreation: UIViewController {
         scrollView.addSubview(stackViewOption)
         
         [titleLabel,
+         completedDaysLabel,
          nameTextField,
          limitMessage,
          tableView,
@@ -273,6 +291,7 @@ final class HabitCreation: UIViewController {
     
     private func settingSpacing() {
         stackViewOption.setCustomSpacing(38, after: titleLabel)
+        stackViewOption.setCustomSpacing(24, after: completedDaysLabel)
         stackViewOption.setCustomSpacing(24, after: nameTextField)
         stackViewOption.setCustomSpacing(50, after: tableView)
         stackViewOption.setCustomSpacing(34, after: emojiCollectionView)
@@ -291,7 +310,6 @@ final class HabitCreation: UIViewController {
         stackViewOption.setCustomSpacing(CGFloat(spacingAfterTextField), after: nameTextField)
         stackViewOption.setCustomSpacing(CGFloat(spacingAfterLimitMessage), after: limitMessage)
     }
-    
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
@@ -339,17 +357,70 @@ final class HabitCreation: UIViewController {
         }
     }
     
+    private func localizedDayCountString(for count: Int) -> String {
+        let suffix: String
+        switch count % 10 {
+        case 1:
+            suffix = (count % 100 == 11) ? LocalizationHelper.localizedString("daysMany") :
+            LocalizationHelper.localizedString("day")
+        case 2, 3, 4:
+            suffix = ([12, 13, 14].contains(count % 100)) ? LocalizationHelper.localizedString("daysMany") : LocalizationHelper.localizedString("days")
+        default:
+            suffix = LocalizationHelper.localizedString("daysMany")
+        }
+        return "\(count) \(suffix)"
+    }
+    //🤡
+    // MARK: - Editing
+    private func isEditingModeLoad() {
+        if isEditingMode, let existingTracker = existingTracker {
+            // Преобразуем existingTracker в TrackerCoreData
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(tracker: existingTracker) {
+                let completedDaysCount = CoreDataStack.shared.trackerRecordStore.completedDaysCountStore(for: trackerCoreData)
+                completedDaysLabel.text = localizedDayCountString(for: completedDaysCount)
+                nameTextField.text = existingTracker.name
+                selectedEmoji = existingTracker.emoji
+                selectedColor = existingTracker.color.color
+                selectedCategory = existingTracker.initialCategory ?? ""
+                selectedWeekDays = existingTracker.timetable ?? []
+                tableView.reloadData()
+            } else {
+                print("Failed to convert Tracker to TrackerCoreData")
+            }
+        }
+    }
+
+    
+    private func getСategoryEditing() {
+        if let existingTracker = existingTracker {
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(tracker: existingTracker),
+               let categoryTitle = CoreDataStack.shared.trackerStore.fetchCategoryEditing(for: trackerCoreData) {
+                self.selectedCategory = categoryTitle
+            }
+            self.selectedWeekDays = existingTracker.timetable ?? []
+        }
+    }
+    
+    private func updateButtonText() {
+        if isEditingMode {
+            creationButton.setTitle("Сохранить", for: .normal)
+        } else {
+            creationButton.setTitle("Создать", for: .normal)
+        }
+    }
+    
     // MARK: - Action
     @objc private func createButtonTapped() {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let emoji = selectedEmoji,
-              let color = selectedColor else {
+        guard let name = nameTextField.text, !name.isEmpty else {
             showAlert(with: "Error", message: "Please enter tracker name.")
             return
         }
         
+        let emoji = selectedEmoji ?? emojis.randomElement()!
+        let color = selectedColor ?? colors.randomElement()!
+
         let codableColor = CodableColor(color: color)
-        
+
         let timetable: [WeekDay]
         if isHabitTracker {
             timetable = selectedWeekDays
@@ -360,25 +431,33 @@ final class HabitCreation: UIViewController {
                 timetable = []
             }
         }
-        
-        let newTracker = Tracker(
-            id: UUID(),
-            name: name,
-            color: codableColor,
-            emoji: emoji,
-            timetable: timetable,
-            completedDays: []
-        )
-        
-        habitCreationDelegate?.createButtonidTap(
-            tracker: newTracker,
-            category: selectedCategory
-        )
-        
-        if let trackerViewController = habitCreationDelegate as? TrackerViewController {
-            trackerViewController.reload()
+
+        if isEditingMode, let existingTracker = existingTracker {
+            CoreDataStack.shared.trackerStore.updateTracker(
+                trackerId: existingTracker.id,
+                newName: name,
+                newColor: color,
+                newEmoji: emoji,
+                newTimetable: timetable,
+                newCategory: selectedCategory
+            )
+        } else {
+            let newTracker = Tracker(
+                id: UUID(),
+                name: name,
+                color: codableColor,
+                emoji: emoji,
+                timetable: timetable,
+                creationDate: existingTracker?.creationDate ?? Date(),
+                initialCategory: selectedCategory
+            )
+            habitCreationDelegate?.createButtonidTap(
+                tracker: newTracker,
+                category: selectedCategory
+            )
         }
-        
+
+        updateButtonText()
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -411,13 +490,15 @@ extension HabitCreation: UITableViewDataSource {
         } else if indexPath.row == 1 {
             let timemable = selectedWeekDays.isEmpty ? "" :
             selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
-            cell.configureCell(with: LocalizationHelper.localizedString("timetable"),
-                               subtitle: timemable, isFirstCell: false
+            cell.configureCell(
+                with: LocalizationHelper.localizedString("timetable"),
+                subtitle: timemable, isFirstCell: false
             )
         }
         cell.selectionStyle = . none
         
-        let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        let isLastCell = indexPath.row == tableView.numberOfRows(
+            inSection: indexPath.section) - 1
         
         if isLastCell {
             cell.hideSeparator()
@@ -459,7 +540,6 @@ extension HabitCreation: CategoryViewControllerDelegate {
         let indexPath = IndexPath(row: 0, section: 0)
         if let cell = tableView.cellForRow(at: indexPath) as? HabitTableView {
             cell.subtitleLabel.text = category
-            
             tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
@@ -584,7 +664,6 @@ extension HabitCreation: UICollectionViewDataSource {
         
         return UICollectionViewCell()
     }
-    
     
     func collectionView(_ collectionView: UICollectionView,
                         viewForSupplementaryElementOfKind kind: String,
