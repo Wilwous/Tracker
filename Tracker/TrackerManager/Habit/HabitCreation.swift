@@ -243,6 +243,7 @@ final class HabitCreation: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
@@ -261,6 +262,8 @@ final class HabitCreation: UIViewController {
         
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             updateAddButtonColor()
+            emojiCollectionView.reloadData()
+            colorCollectionView.reloadData()
         }
     }
     
@@ -336,6 +339,40 @@ final class HabitCreation: UIViewController {
         ])
     }
     
+    private func choosenEmoji() {
+        if let selectedEmoji, let emojiRow = emojis.firstIndex(of: selectedEmoji) {
+            DispatchQueue.main.async {
+                
+                self.emojiCollectionView.selectItem(
+                    at: IndexPath(row: emojiRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.emojiCollectionView.cellForItem(
+                    at: IndexPath(row: emojiRow, section: 0)
+                ) as? EmojiCollection {
+                    cell.highlightEmoji()
+                }
+            }
+        }
+    }
+    
+    private func choosenColor() {
+        if let selectedColor, let colorRow = colors.firstIndex(of: selectedColor) {
+            DispatchQueue.main.async {
+                self.colorCollectionView.reloadData()
+                self.colorCollectionView.selectItem(
+                    at: IndexPath(row: colorRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.colorCollectionView.cellForItem(
+                    at: IndexPath(row: colorRow, section: 0)
+                ) as? ColorCollection {
+                    cell.highlightColor()
+                }
+            }
+        }
+    }
+    
     // MARK: - Alert
     private func showAlert(with title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -370,11 +407,10 @@ final class HabitCreation: UIViewController {
         }
         return "\(count) \(suffix)"
     }
-    //🤡
+    
     // MARK: - Editing
     private func isEditingModeLoad() {
         if isEditingMode, let existingTracker = existingTracker {
-            // Преобразуем existingTracker в TrackerCoreData
             if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(tracker: existingTracker) {
                 let completedDaysCount = CoreDataStack.shared.trackerRecordStore.completedDaysCountStore(for: trackerCoreData)
                 completedDaysLabel.text = localizedDayCountString(for: completedDaysCount)
@@ -384,12 +420,14 @@ final class HabitCreation: UIViewController {
                 selectedCategory = existingTracker.initialCategory ?? ""
                 selectedWeekDays = existingTracker.timetable ?? []
                 tableView.reloadData()
+                choosenEmoji()
+                choosenColor()
             } else {
                 print("Failed to convert Tracker to TrackerCoreData")
             }
         }
     }
-
+    
     
     private func getСategoryEditing() {
         if let existingTracker = existingTracker {
@@ -418,9 +456,9 @@ final class HabitCreation: UIViewController {
         
         let emoji = selectedEmoji ?? emojis.randomElement()!
         let color = selectedColor ?? colors.randomElement()!
-
+        
         let codableColor = CodableColor(color: color)
-
+        
         let timetable: [WeekDay]
         if isHabitTracker {
             timetable = selectedWeekDays
@@ -431,7 +469,7 @@ final class HabitCreation: UIViewController {
                 timetable = []
             }
         }
-
+        
         if isEditingMode, let existingTracker = existingTracker {
             CoreDataStack.shared.trackerStore.updateTracker(
                 trackerId: existingTracker.id,
@@ -456,7 +494,7 @@ final class HabitCreation: UIViewController {
                 category: selectedCategory
             )
         }
-
+        
         updateButtonText()
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
@@ -627,91 +665,151 @@ extension HabitCreation: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UICollectionViewDataSource
 extension HabitCreation: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
     ) -> Int {
         18
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         if collectionView == emojiCollectionView {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: EmojiCollection.idetnifier,
                 for: indexPath
             ) as? EmojiCollection else {
-                assertionFailure("Could not cast to EmojiCell")
+                assertionFailure(
+                    "Could not cast to EmojiCell"
+                )
                 return UICollectionViewCell()
             }
             
             let emoji = emojis[indexPath.item]
             cell.emojiLabel.text = emoji
+            if emoji == selectedEmoji {
+                cell.highlightEmoji()
+            } else {
+                cell.unhighlightEmoji()
+            }
             return cell
+            
         } else if collectionView == colorCollectionView {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ColorCollection.idetnifier,
                 for: indexPath
             ) as? ColorCollection else {
-                assertionFailure("Could not cast to ColorCell")
+                assertionFailure(
+                    "Could not cast to ColorCell"
+                )
                 return UICollectionViewCell()
             }
             
             let color = colors[indexPath.item]
             cell.colorView.backgroundColor = color
+            
+            if color == selectedColor {
+                cell.highlightColor()
+            } else {
+                cell.unhighlightColor()
+            }
+            
             return cell
         }
         
         return UICollectionViewCell()
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        viewForSupplementaryElementOfKind kind: String,
-                        at indexPath: IndexPath
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader else {
-            assertionFailure( "Failed to cast UICollectionReusableView" )
+            assertionFailure(
+                "Failed to cast UICollectionReusableView"
+            )
             return UICollectionReusableView()
         }
         
         guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: TrackerHeader.headerIdentifier,
-            for: indexPath) as? TrackerHeader
-        else { assertionFailure("Failed to cast UICollectionReusableView" )
+            for: indexPath
+        ) as? TrackerHeader
+        else { assertionFailure(
+            "Failed to cast UICollectionReusableView"
+        )
             return UICollectionReusableView()
         }
         
         if collectionView == emojiCollectionView {
-            header.configure(with: LocalizationHelper.localizedString("emoji"))
+            header.configure(
+                with: LocalizationHelper.localizedString(
+                    "emoji"
+                )
+            )
         } else if collectionView == colorCollectionView {
-            header.configure(with: LocalizationHelper.localizedString("color"))
+            header.configure(
+                with: LocalizationHelper.localizedString(
+                    "color"
+                )
+            )
         }
         
         return header
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         if collectionView == emojiCollectionView {
-            let selectedCell = collectionView.cellForItem(at: indexPath) as? EmojiCollection
+            let selectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? EmojiCollection
             selectedEmoji = emojis[indexPath.item]
-            
             selectedCell?.highlightEmoji()
+            for cellIndex in collectionView.indexPathsForVisibleItems {
+                if cellIndex != indexPath {
+                    let cell = collectionView.cellForItem(
+                        at: cellIndex
+                    ) as? EmojiCollection
+                    cell?.unhighlightEmoji()
+                }
+            }
         } else if collectionView == colorCollectionView {
-            let selectedCell = collectionView.cellForItem(at: indexPath) as? ColorCollection
+            let selectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? ColorCollection
             selectedColor = colors[indexPath.item]
-            
             selectedCell?.highlightColor()
+            for cellIndex in collectionView.indexPathsForVisibleItems {
+                if cellIndex != indexPath {
+                    let cell = collectionView.cellForItem(
+                        at: cellIndex
+                    ) as? ColorCollection
+                    cell?.unhighlightColor()
+                }
+            }
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didDeselectItemAt indexPath: IndexPath
+    ) {
         if collectionView == emojiCollectionView {
-            let deselectedCell = collectionView.cellForItem(at: indexPath) as? EmojiCollection
+            let deselectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? EmojiCollection
             deselectedCell?.unhighlightEmoji()
-            
         } else if collectionView == colorCollectionView {
-            let deselectedCell = collectionView.cellForItem(at: indexPath) as? ColorCollection
+            let deselectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? ColorCollection
             deselectedCell?.unhighlightColor()
         }
     }

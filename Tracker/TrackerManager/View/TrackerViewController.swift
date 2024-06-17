@@ -134,6 +134,16 @@ final class TrackerViewController: UIViewController {
         reload()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.didOpenMain()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticsService.didCloseMain()
+    }
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
@@ -424,6 +434,7 @@ final class TrackerViewController: UIViewController {
     }
     
     @objc private func addTrackerButtonTapped() {
+        AnalyticsService.didClickAddTrack()
         let vc = TrackerCreator()
         vc.trackerViewController = self
         vc.habitCreationDelegate = self
@@ -432,6 +443,7 @@ final class TrackerViewController: UIViewController {
     
     // MARK: - Filter
     @objc private func filterButtonTapped() {
+        AnalyticsService.didClickFilter()
         let filtersVC = FiltersViewController()
         filtersVC.selectedFilter = selectedFilter
         filtersVC.modalPresentationStyle = .pageSheet
@@ -459,6 +471,7 @@ extension TrackerViewController: UISearchControllerDelegate, UISearchBarDelegate
 // MARK: - TrackerCollectionDelegate
 extension TrackerViewController: TrackerCollectionDelegate {
     func markTrackerAsCompleted(id: UUID, at indexPath: IndexPath) {
+        AnalyticsService.didClickTrack()
         let selectedDate = dateSetting.date
         let currentDate = Date()
         

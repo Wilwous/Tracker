@@ -250,6 +250,7 @@ final class TrackerCollection: UICollectionViewCell {
     
     // MARK: - Action
     @objc private func completeButtonTapped() {
+        AnalyticsService.didClickTrack()
         guard let trackerId = trackerId, let indexPath = indexPath else {
             assertionFailure("No trackerId or indexPath")
             return
@@ -276,10 +277,12 @@ extension TrackerCollection: UIContextMenuInteractionDelegate {
             }
             
             let editAction = UIAction(title: "Редактировать") { [weak self] action in
+                AnalyticsService.didClickEdit()
                 self?.onEdit?()
             }
             
             let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] action in
+                AnalyticsService.didClickDelete()
                 self?.onDelete?()
             }
             return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
