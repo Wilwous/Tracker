@@ -114,7 +114,6 @@ final class TrackerViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         CoreDataStack.shared.trackerStore.delegate = self
         CoreDataStack.shared.trackerRecordStore.delegate = self
-        CoreDataStack.shared.trackerCategoryStore.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -590,26 +589,6 @@ extension TrackerViewController: UICollectionViewDataSource {
             isPinned: isTrackerPinned(tracker)
         )
         
-        cell.onDelete = { [weak self] in
-            let alert = UIAlertController(
-                title: LocalizationHelper.localizedString("trackerRemovalAlert"),
-                message: nil, preferredStyle: .actionSheet)
-            let deleteAction = UIAlertAction(
-                title: LocalizationHelper.localizedString("delete"),
-                style: .destructive
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                let tracker = self.filteredCategories[indexPath.section].trackers[indexPath.row]
-                self.deleteTracker(trackerId: tracker.id)
-            }
-            let cancelAction = UIAlertAction(
-                title: LocalizationHelper.localizedString("cancel"), style: .cancel
-            )
-            alert.addAction(deleteAction)
-            alert.addAction(cancelAction)
-            self?.present(alert, animated: true)
-        }
-        
         cell.onEdit = { [weak self] in
             guard let self = self else { return }
             let category = self.filteredCategories[indexPath.section]
@@ -622,6 +601,31 @@ extension TrackerViewController: UICollectionViewDataSource {
             editHabitVC.habitCreationDelegate = self
             editHabitVC.modalPresentationStyle = .pageSheet
             self.present(editHabitVC, animated: true)
+        }
+        
+        cell.onDelete = { [weak self] in
+            let alert = UIAlertController(
+                title: LocalizationHelper.localizedString("trackerRemovalAlert"),
+                message: nil, preferredStyle: .actionSheet)
+            let deleteAction = UIAlertAction(
+                title: LocalizationHelper.localizedString("delete"),
+                style: .destructive
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                let tracker = self.filteredCategories[indexPath.section].trackers[indexPath.row]
+                self.deleteTracker(trackerId: tracker.id)
+            }
+    
+            CoreDataStack.shared.trackerRecordStore.deleteRecordsForTracker(with: tracker.id)
+            CoreDataStack.shared.trackerStore.deleteTracker(trackerId: tracker.id)
+            self?.reload()
+            
+            let cancelAction = UIAlertAction(
+                title: LocalizationHelper.localizedString("cancel"), style: .cancel
+            )
+            alert.addAction(deleteAction)
+            alert.addAction(cancelAction)
+            self?.present(alert, animated: true)
         }
         
         cell.onPin = { [weak self] in
@@ -692,12 +696,6 @@ extension TrackerViewController: TrackerStoreDelegate {
 
 extension TrackerViewController: TrackerRecordStoreDelegate {
     func trackerRecordStoreDidChange() {
-        reload()
-    }
-}
-
-extension TrackerViewController: TrackerCategoryStoreDelegate {
-    func trackerCategoryStoreDidChange() {
         reload()
     }
 }

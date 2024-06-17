@@ -18,7 +18,7 @@
 "filtres" = "Filtres";
 "trackerRemovalAlert" = "Are you sure you want to delete the tracker?";
 "delete" = "Delete";
-"nothing found" = "Nothing found"
+"nothing found" = "Nothing found";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Create tracker";

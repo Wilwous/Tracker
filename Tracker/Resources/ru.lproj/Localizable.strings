@@ -18,7 +18,7 @@
 "filtres" = "Фильтры";
 "trackerRemovalAlert" = "Уверены что хотите удалить трекер?";
 "delete" = "Удалить";
-"nothing found" = "Ничего не найдено"
+"nothing found" = "Ничего не найдено";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Создание трекера";

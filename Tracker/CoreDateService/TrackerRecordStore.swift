@@ -94,17 +94,17 @@ final class TrackerRecordStore: NSObject {
             print("Failed to fetch tracker records: \(error)")
             return 0
         }
+    }
+    
+    func fetchCompletedTrackerCount() -> Int {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         
-        func fetchCompletedTrackerCount() -> Int {
-            let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
-            
-            do {
-                let records = try managedObjectContext.fetch(fetchRequest)
-                return records.count
-            } catch {
-                print("Failed to fetch tracker records: \(error)")
-                return 0
-            }
+        do {
+            let records = try managedObjectContext.fetch(fetchRequest)
+            return records.count
+        } catch {
+            print("Failed to fetch tracker records: \(error)")
+            return 0
         }
     }
     

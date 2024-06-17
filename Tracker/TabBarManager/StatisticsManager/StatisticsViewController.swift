@@ -50,6 +50,7 @@ final class StatisticsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhite
+        CoreDataStack.shared.trackerRecordStore.delegate = self 
         settingNavigationBar()
         addElemens()
         layoutConstraint()
@@ -88,10 +89,11 @@ final class StatisticsViewController: UIViewController {
     }
     
     private func updateUI() {
-//        completedTrackerCount = CoreDataStack.shared.trackerRecordStore.getCompletedTrackerCount()
+        completedTrackerCount = CoreDataStack.shared.trackerRecordStore.fetchCompletedTrackerCount()
         
         analyticsController.configure(
-            value: completedTrackerCount, description: LocalizationHelper.localizedString("completedTrackers")
+            value: completedTrackerCount,
+            description: LocalizationHelper.localizedString("completedTrackers")
         )
         
         let isEmpty = completedTrackerCount == 0
