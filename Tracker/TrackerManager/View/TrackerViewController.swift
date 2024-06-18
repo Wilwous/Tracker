@@ -301,7 +301,7 @@ final class TrackerViewController: UIViewController {
     func isTrackerPinned(_ tracker: Tracker) -> Bool {
         guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTracker(
             by: tracker.id) else { return false }
-        return trackerCoreData.category?.title == "Закрепленные"
+        return trackerCoreData.category?.title == LocalizationHelper.localizedString("pinned")
     }
     
     func pinTracker(_ tracker: Tracker) {

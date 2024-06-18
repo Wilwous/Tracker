@@ -19,6 +19,12 @@
 "trackerRemovalAlert" = "Уверены что хотите удалить трекер?";
 "delete" = "Удалить";
 "nothing found" = "Ничего не найдено";
+"pinned" = "Закрепленные";
+"pin" = "Закрепить";
+"unpin" = "Открепить";
+"сreate" = "Создать";
+"save" = "Сохранить";
+"edit" = "Редактировать";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Создание трекера";
@@ -36,6 +42,9 @@
 "timetable" = "Расписание";
 "emoji" = "Эмодзи";
 "color" = "Цвет";
+"editing" = "Редактирование привычки";
+"alert" = "Пожалуйста, введите имя трекера";
+"error" = "Ошибка";
 
 //MARK: - CategoryViewController
 "addCategoryButtonText" = "Добавить категорию";

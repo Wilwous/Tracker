@@ -60,7 +60,7 @@ final class HabitCreation: UIViewController {
     }()
     
     private lazy var titleLabel = CustomTitleLabel(
-        text: isEditingMode ? "Редактирование привычки" :
+        text: isEditingMode ? LocalizationHelper.localizedString("editing") :
             (isHabitTracker ? LocalizationHelper.localizedString("newHabit") :
                 LocalizationHelper.localizedString("newIrregularEvent"))
     )
@@ -180,10 +180,6 @@ final class HabitCreation: UIViewController {
     
     private lazy var creationButton: UIButton = {
         let creation = UIButton()
-        creation.setTitle(
-            LocalizationHelper.localizedString("create"),
-            for: .normal
-        )
         creation.layer.cornerRadius = 16
         creation.translatesAutoresizingMaskIntoConstraints = false
         creation.addTarget(
@@ -401,7 +397,9 @@ final class HabitCreation: UIViewController {
             suffix = (count % 100 == 11) ? LocalizationHelper.localizedString("daysMany") :
             LocalizationHelper.localizedString("day")
         case 2, 3, 4:
-            suffix = ([12, 13, 14].contains(count % 100)) ? LocalizationHelper.localizedString("daysMany") : LocalizationHelper.localizedString("days")
+            suffix = ([12, 13, 14].contains(count % 100)
+            ) ? LocalizationHelper.localizedString("daysMany") :
+            LocalizationHelper.localizedString("days")
         default:
             suffix = LocalizationHelper.localizedString("daysMany")
         }
@@ -411,8 +409,12 @@ final class HabitCreation: UIViewController {
     // MARK: - Editing
     private func isEditingModeLoad() {
         if isEditingMode, let existingTracker = existingTracker {
-            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(tracker: existingTracker) {
-                let completedDaysCount = CoreDataStack.shared.trackerRecordStore.completedDaysCountStore(for: trackerCoreData)
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(
+                tracker: existingTracker
+            ) {
+                let completedDaysCount = CoreDataStack.shared.trackerRecordStore.completedDaysCountStore(
+                    for: trackerCoreData
+                )
                 completedDaysLabel.text = localizedDayCountString(for: completedDaysCount)
                 nameTextField.text = existingTracker.name
                 selectedEmoji = existingTracker.emoji
@@ -431,8 +433,12 @@ final class HabitCreation: UIViewController {
     
     private func getСategoryEditing() {
         if let existingTracker = existingTracker {
-            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(tracker: existingTracker),
-               let categoryTitle = CoreDataStack.shared.trackerStore.fetchCategoryEditing(for: trackerCoreData) {
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(
+                tracker: existingTracker
+            ),
+               let categoryTitle = CoreDataStack.shared.trackerStore.fetchCategoryEditing(
+                for: trackerCoreData
+               ) {
                 self.selectedCategory = categoryTitle
             }
             self.selectedWeekDays = existingTracker.timetable ?? []
@@ -441,16 +447,19 @@ final class HabitCreation: UIViewController {
     
     private func updateButtonText() {
         if isEditingMode {
-            creationButton.setTitle("Сохранить", for: .normal)
+            creationButton.setTitle(LocalizationHelper.localizedString("save"), for: .normal)
         } else {
-            creationButton.setTitle("Создать", for: .normal)
+            creationButton.setTitle(LocalizationHelper.localizedString("сreate"), for: .normal)
         }
     }
     
     // MARK: - Action
     @objc private func createButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty else {
-            showAlert(with: "Error", message: "Please enter tracker name.")
+            showAlert(
+                with: LocalizationHelper.localizedString("error"),
+                message: LocalizationHelper.localizedString("alert")
+            )
             return
         }
         

@@ -22,7 +22,8 @@ final class TrackerCollection: UICollectionViewCell {
     var isPinned: Bool = false {
         didSet {
             pinImageView .isHidden = !isPinned
-            pinActionTitle = isPinned ? "Открепить" : "Закрепить"
+            pinActionTitle = isPinned ? LocalizationHelper.localizedString("unpin") :
+            LocalizationHelper.localizedString("pin")
         }
     }
     
@@ -34,7 +35,7 @@ final class TrackerCollection: UICollectionViewCell {
     private var isCompletedToday = false
     private var trackerId: UUID?
     private var indexPath: IndexPath?
-    private var pinActionTitle = "Закрепить"
+    private var pinActionTitle = LocalizationHelper.localizedString("pin")
     
     // MARK: - UI Components
     private lazy var emojiLabel: UILabel = {
@@ -276,15 +277,18 @@ extension TrackerCollection: UIContextMenuInteractionDelegate {
                 self?.onPin?()
             }
             
-            let editAction = UIAction(title: "Редактировать") { [weak self] action in
+            let editAction = UIAction(title: LocalizationHelper.localizedString("edit")
+            ) { [weak self] action in
                 AnalyticsService.didClickEdit()
                 self?.onEdit?()
             }
             
-            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] action in
-                AnalyticsService.didClickDelete()
-                self?.onDelete?()
-            }
+            let deleteAction = UIAction(
+                title: LocalizationHelper.localizedString("delete"),
+                attributes: .destructive) { [weak self] action in
+                    AnalyticsService.didClickDelete()
+                    self?.onDelete?()
+                }
             return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
         }
     }

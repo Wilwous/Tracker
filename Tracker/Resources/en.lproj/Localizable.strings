@@ -19,6 +19,12 @@
 "trackerRemovalAlert" = "Are you sure you want to delete the tracker?";
 "delete" = "Delete";
 "nothing found" = "Nothing found";
+"pinned" = "Pinned";
+"pin" = "Pin";
+"unpin" = "Unpin";
+"сreate" = "Create";
+"save" = "Save";
+"edit" = "Edit";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Create tracker";
@@ -36,6 +42,9 @@
 "timetable" = "Timetable";
 "emoji" = "Emoji";
 "color" = "Color";
+"editing" = "Editing a habit";
+"alert" = "Please enter tracker name";
+"error" = "Error";
 
 //MARK: - CategoryViewController
 "addCategoryButtonText" = "Add category";
