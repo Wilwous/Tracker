@@ -25,6 +25,10 @@
 "сreate" = "Create";
 "save" = "Save";
 "edit" = "Edit";
+"all trackers" = "All trackers";
+"trackers for today" = "Trackers for today";
+"completed" = "Completed";
+"uncomplete" = "Uncomplete";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Create tracker";

@@ -25,6 +25,10 @@
 "сreate" = "Создать";
 "save" = "Сохранить";
 "edit" = "Редактировать";
+"all trackers" = "Все трекеры";
+"trackers for today" = "Трекеры на сегодня";
+"completed" = "Завершённые";
+"uncomplete" = "Незавершённые";
 
 //MARK: - TrackerCreator
 "trackerCreation" = "Создание трекера";

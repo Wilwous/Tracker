@@ -247,10 +247,11 @@ final class HabitCreation: UIViewController {
         isEditingModeLoad()
         getСategoryEditing()
         updateButtonText()
-        emojiCollectionView.isScrollEnabled = false
-        colorCollectionView.isScrollEnabled = false
+        updateAddButtonColor()
         nameTextField.delegate = self
         limitMessage.isHidden = true
+        emojiCollectionView.isScrollEnabled = false
+        colorCollectionView.isScrollEnabled = false
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -378,13 +379,15 @@ final class HabitCreation: UIViewController {
     
     private func updateAddButtonColor() {
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        let isTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
+        let isScheduleSelected = !selectedWeekDays.isEmpty || !isHabitTracker
         
-        if let text = nameTextField.text, !text.isEmpty || !selectedWeekDays.isEmpty {
-            creationButton.isEnabled = true
+        creationButton.isEnabled = isTextFieldNotEmpty && isScheduleSelected
+        
+        if creationButton.isEnabled {
             creationButton.backgroundColor = isDarkMode ? .white : .black
             creationButton.setTitleColor(isDarkMode ? .black : .white, for: .normal)
         } else {
-            creationButton.isEnabled = false
             creationButton.backgroundColor = .gray
             creationButton.setTitleColor(.white, for: .normal)
         }
@@ -430,7 +433,6 @@ final class HabitCreation: UIViewController {
         }
     }
     
-    
     private func getСategoryEditing() {
         if let existingTracker = existingTracker {
             if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(
@@ -459,6 +461,14 @@ final class HabitCreation: UIViewController {
             showAlert(
                 with: LocalizationHelper.localizedString("error"),
                 message: LocalizationHelper.localizedString("alert")
+            )
+            return
+        }
+        
+        if isHabitTracker && selectedWeekDays.isEmpty {
+            showAlert(
+                with: LocalizationHelper.localizedString("error"),
+                message: LocalizationHelper.localizedString("alertSchedule")
             )
             return
         }
@@ -597,6 +607,7 @@ extension HabitCreation: TimetableCreationDelegate {
     func didSelectDays(_ days: [WeekDay]) {
         selectedWeekDays = days
         tableView.reloadData()
+        updateAddButtonColor()
     }
 }
 
@@ -604,6 +615,7 @@ extension HabitCreation: TimetableCreationDelegate {
 extension HabitCreation: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        updateAddButtonColor()
         return true
     }
     

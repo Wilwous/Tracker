@@ -16,8 +16,10 @@ final class FiltersViewController: UIViewController {
     private var selectedIndex: IndexPath?
     private var previouslySelectedIndex: IndexPath?
     private let allFilters = [
-        "Все трекеры", "Трекеры на сегодня",
-        "Завершённые", "Незавершённые"
+        LocalizationHelper.localizedString("all trackers"),
+        LocalizationHelper.localizedString("trackers for today"),
+        LocalizationHelper.localizedString("completed"),
+        LocalizationHelper.localizedString("uncomplete")
     ]
     private let filterTypes: [TrackerFilterHelper] = [
         .all, .today, .completed, .uncompleted
@@ -25,7 +27,11 @@ final class FiltersViewController: UIViewController {
     
     // MARK: - UI Components
     private lazy var titleLabel: CustomTitleLabel = {
-        let label = CustomTitleLabel(text: "Фильтры")
+        let label = CustomTitleLabel(
+            text:  LocalizationHelper.localizedString(
+                "filtres"
+            )
+        )
         
         return label
     }()
