@@ -336,53 +336,15 @@ final class HabitCreation: UIViewController {
         ])
     }
     
-    private func choosenEmoji() {
-        if let selectedEmoji, let emojiRow = emojis.firstIndex(of: selectedEmoji) {
-            DispatchQueue.main.async {
-                
-                self.emojiCollectionView.selectItem(
-                    at: IndexPath(row: emojiRow, section: 0),
-                    animated: true, scrollPosition: .centeredHorizontally
-                )
-                if let cell = self.emojiCollectionView.cellForItem(
-                    at: IndexPath(row: emojiRow, section: 0)
-                ) as? EmojiCollection {
-                    cell.highlightEmoji()
-                }
-            }
-        }
-    }
-    
-    private func choosenColor() {
-        if let selectedColor, let colorRow = colors.firstIndex(of: selectedColor) {
-            DispatchQueue.main.async {
-                self.colorCollectionView.reloadData()
-                self.colorCollectionView.selectItem(
-                    at: IndexPath(row: colorRow, section: 0),
-                    animated: true, scrollPosition: .centeredHorizontally
-                )
-                if let cell = self.colorCollectionView.cellForItem(
-                    at: IndexPath(row: colorRow, section: 0)
-                ) as? ColorCollection {
-                    cell.highlightColor()
-                }
-            }
-        }
-    }
-    
-    // MARK: - Alert
-    private func showAlert(with title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-    
     private func updateAddButtonColor() {
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
         let isTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
         let isScheduleSelected = !selectedWeekDays.isEmpty || !isHabitTracker
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
         
-        creationButton.isEnabled = isTextFieldNotEmpty && isScheduleSelected
+        creationButton.isEnabled = isTextFieldNotEmpty &&
+        isScheduleSelected && isEmojiSelected && isColorSelected
         
         if creationButton.isEnabled {
             creationButton.backgroundColor = isDarkMode ? .white : .black
@@ -455,26 +417,55 @@ final class HabitCreation: UIViewController {
         }
     }
     
+    private func choosenEmoji() {
+        if let selectedEmoji, let emojiRow = emojis.firstIndex(of: selectedEmoji) {
+            DispatchQueue.main.async {
+                self.emojiCollectionView.selectItem(
+                    at: IndexPath(row: emojiRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.emojiCollectionView.cellForItem(
+                    at: IndexPath(row: emojiRow, section: 0)
+                ) as? EmojiCollection {
+                    cell.highlightEmoji()
+                }
+            }
+        }
+    }
+    
+    private func choosenColor() {
+        if let selectedColor, let colorRow = colors.firstIndex(of: selectedColor) {
+            DispatchQueue.main.async {
+                self.colorCollectionView.selectItem(
+                    at: IndexPath(row: colorRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.colorCollectionView.cellForItem(
+                    at: IndexPath(row: colorRow, section: 0)
+                ) as? ColorCollection {
+                    cell.highlightColor()
+                }
+            }
+        }
+    }
+    
     // MARK: - Action
     @objc private func createButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty else {
-            showAlert(
-                with: LocalizationHelper.localizedString("error"),
-                message: LocalizationHelper.localizedString("alert")
-            )
             return
         }
         
         if isHabitTracker && selectedWeekDays.isEmpty {
-            showAlert(
-                with: LocalizationHelper.localizedString("error"),
-                message: LocalizationHelper.localizedString("alertSchedule")
-            )
             return
         }
         
-        let emoji = selectedEmoji ?? emojis.randomElement()!
-        let color = selectedColor ?? colors.randomElement()!
+        guard let emoji = selectedEmoji else {
+            return
+        }
+        
+        guard let color = selectedColor else {
+            return
+        }
         
         let codableColor = CodableColor(color: color)
         
@@ -616,6 +607,7 @@ extension HabitCreation: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         updateAddButtonColor()
+        
         return true
     }
     
@@ -816,6 +808,7 @@ extension HabitCreation: UICollectionViewDataSource {
                 }
             }
         }
+        updateAddButtonColor()
     }
     
     func collectionView(
