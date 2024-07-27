@@ -18,8 +18,8 @@ final class TrackerCreator: UIViewController {
         text: "Создание трекера"
     )
     
-    private lazy var creationHabbitButton: CustomHabitTransition = {
-        let button = CustomHabitTransition(title: "Привычка")
+    private lazy var creationHabbitButton: CustomButton = {
+        let button = CustomButton(title: "Привычка")
         button.addTarget(
             self,
             action: #selector(creationHabbitButtonTapped),
@@ -29,8 +29,8 @@ final class TrackerCreator: UIViewController {
         return button
     }()
     
-    private lazy var сreatingIrregularEvents: CustomHabitTransition = {
-        let button = CustomHabitTransition(title: "Нерегулярное событие")
+    private lazy var сreatingIrregularEvents: CustomButton = {
+        let button = CustomButton(title: "Нерегулярное событие")
         button.addTarget(
             self, action: #selector(сreatingIrregularEventsTapped),
             for: .touchUpInside

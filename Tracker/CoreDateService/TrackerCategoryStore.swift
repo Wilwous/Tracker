@@ -44,10 +44,11 @@ final class TrackerCategoryStore: NSObject {
         }
     }
     
-    func createCategory(with name: String) -> TrackerCategoryCoreData {
+    func createCategory(title: String) -> TrackerCategoryCoreData {
         let category = TrackerCategoryCoreData(context: managedObjectContext)
-        category.title = name
+        category.title = title
         saveContext()
+        
         return category
     }
     

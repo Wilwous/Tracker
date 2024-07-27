@@ -19,7 +19,7 @@ protocol HabitCreationDelegate: AnyObject {
 }
 
 final class HabitCreation: UIViewController {
-    
+
     // MARK: - Delegate
     weak var timetableCreationDelegate: TimetableCreationDelegate?
     weak var habitCreationDelegate: HabitCreationDelegate?
@@ -30,6 +30,8 @@ final class HabitCreation: UIViewController {
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
     private var selectedWeekDays: [WeekDay] = []
+    private var selectedCategory: String = ""
+    private var isIrregularEvent: Bool = false
     
     private var emojis: [String] = [
         "😀", "😻", "🌺", "🐶", "❤️", "😱",
@@ -56,23 +58,10 @@ final class HabitCreation: UIViewController {
         text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
     )
     
-    private lazy var nameTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
-        textField.textAlignment = .left
-        textField.layer.masksToBounds = true
-        textField.layer.cornerRadius = 16
-        textField.backgroundColor = .ypBackgroundDay
-        textField.rightViewMode = .always
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        let leftIndent = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.leftView = leftIndent
-        textField.leftViewMode = .always
-        
-        let rightIndent = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
-        textField.rightView = rightIndent
-        textField.rightViewMode = .always
+    private lazy var nameTextField: CustomTextField = {
+        let textField = CustomTextField(
+            placeholder: "Введите название трекера"
+        )
         
         return textField
     }()
@@ -327,23 +316,32 @@ final class HabitCreation: UIViewController {
             showAlert(with: "Error", message: "Please enter tracker name.")
             return
         }
-        
+
         let codableColor = CodableColor(color: color)
         
-        let newTracker = Tracker(id: UUID(),
-                                 name: name,
-                                 color: codableColor,
-                                 emoji: emoji,
-                                 timetable: isHabitTracker ? selectedWeekDays : [
-                                    .monday, .tuesday,
-                                    .wednesday, .thursday,
-                                    .friday, .saturday, .sunday
-                                 ],
-                                 completedDays: [])
+        let timetable: [WeekDay]
+        if isHabitTracker {
+            timetable = selectedWeekDays
+        } else {
+            if let today = WeekDay.from(date: Date()) {
+                timetable = [today]
+            } else {
+                timetable = []
+            }
+        }
+        
+        let newTracker = Tracker(
+            id: UUID(),
+            name: name,
+            color: codableColor,
+            emoji: emoji,
+            timetable: timetable,
+            completedDays: []
+        )
         
         habitCreationDelegate?.createButtonidTap(
             tracker: newTracker,
-            category: "Category"
+            category: selectedCategory
         )
         
         if let trackerViewController = habitCreationDelegate as? TrackerViewController {
@@ -375,7 +373,7 @@ extension HabitCreation: UITableViewDataSource {
         }
         
         if indexPath.row == 0 {
-            cell.configureCell(with: "Категория", subtitle: "Category", isFirstCell: true)
+            cell.configureCell(with: "Категория", subtitle: selectedCategory, isFirstCell: true)
         } else if indexPath.row == 1 {
             let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
             cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
@@ -403,7 +401,10 @@ extension HabitCreation: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row == 0 {
-            print("Category Selected")
+            let categoryListVC = CategoryViewController()
+            categoryListVC.delegate = self
+            categoryListVC.modalPresentationStyle = .pageSheet
+            self.present(categoryListVC, animated: true, completion: nil)
         } else if indexPath.row == 1 {
             let viewController = TimetableCreation()
             viewController.delegate = self
@@ -411,6 +412,19 @@ extension HabitCreation: UITableViewDelegate {
             present(viewController, animated: true, completion: nil)
         }
         updateAddButtonColor()
+    }
+}
+
+// MARK: - CategoryViewControllerDelegate
+extension HabitCreation: CategoryViewControllerDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        let indexPath = IndexPath(row: 0, section: 0)
+        if let cell = tableView.cellForRow(at: indexPath) as? HabitTableView {
+            cell.subtitleLabel.text = category
+            
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
     }
 }
 

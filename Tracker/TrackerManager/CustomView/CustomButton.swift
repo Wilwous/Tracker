@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class CustomHabitTransition: UIButton {
+final class CustomButton: UIButton {
     
     // MARK: - Initialization
     init(title: String) {
