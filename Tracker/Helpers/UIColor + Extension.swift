@@ -29,11 +29,23 @@ extension UIColor {
         "colorSelection18": UIColor(resource: .colorSelection18)
     ]
     
+    convenience init(hexString: String) {
+        if let color = UIColor.color(from: hexString) {
+            self.init(cgColor: color.cgColor)
+        } else {
+            self.init(cgColor: UIColor.yellow.cgColor)
+        }
+    }
+    
     static func color(from string: String) -> UIColor? {
         return colorMap[string]
     }
-   
+    
     static func string(from color: UIColor) -> String? {
         return colorMap.first(where: { $1 == color })?.key
+    }
+    
+    func toHexString() -> String {
+        return UIColor.string(from: self) ?? "Unknown"
     }
 }

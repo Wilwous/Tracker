@@ -20,8 +20,7 @@ final class TrackerHeader: UICollectionReusableView {
         
         return label
     }()
-    
-    // MARK: - Private Properties
+
     private lazy var  containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -41,8 +40,8 @@ final class TrackerHeader: UICollectionReusableView {
     }
     
     // MARK: - Public Methods
-    func configureCell(with model: TrackerCategory) {
-        titleLabel.text = model.headline
+    func configure(with title: String) {
+        titleLabel.text = title
     }
     
     // MARK: - Setup View

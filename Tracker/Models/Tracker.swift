@@ -5,13 +5,45 @@
 //  Created by Антон Павлов on 04.02.2024.
 //
 
-import Foundation
+import UIKit
 
-struct Tracker {
+struct Tracker: Codable {
     let id: UUID
     let name: String
-    let color: String
+    let color: CodableColor
     let emoji: String
     let timetable: [WeekDay]
     let completedDays: [Date]
+    
+    static func completedDaysFromJSON(_ json: String) -> [Date]? {
+        let decoder = JSONDecoder()
+        if let data = json.data(using: .utf8) {
+            return try? decoder.decode([Date].self, from: data)
+        }
+        return nil
+    }
+    
+    static func timetableFromJSON(_ json: String) -> [WeekDay]? {
+        let decoder = JSONDecoder()
+        if let data = json.data(using: .utf8) {
+            return try? decoder.decode([WeekDay].self, from: data)
+        }
+        return nil
+    }
+    
+    func timetableToJSON() -> String? {
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(timetable) {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
+    
+    func completedDaysToJSON() -> String? {
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(completedDays) {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
 }
