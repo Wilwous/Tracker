@@ -1,0 +1,17 @@
+//
+//  Tracker.swift
+//  Tracker
+//
+//  Created by Антон Павлов on 04.02.2024.
+//
+
+import Foundation
+
+struct Tracker {
+    let id: UUID
+    let name: String
+    let color: String
+    let emoji: String
+    let timetable: [WeekDay]
+    let completedDays: [Date]
+}
