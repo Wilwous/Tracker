@@ -18,8 +18,8 @@ final class AddCategoryViewModel {
 
     // MARK: - Public Methods
     func addCategory(name: String) {
-        let category = categoryStore.createCategory(title: name)
-        onCategoryCreation?(category.title ?? "")
+        categoryStore.createCategory(title: name)
+        onCategoryCreation?(name)
     }
 
     func validateCategoryName(_ name: String?) {

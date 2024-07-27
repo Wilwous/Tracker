@@ -19,19 +19,21 @@ protocol HabitCreationDelegate: AnyObject {
 }
 
 final class HabitCreation: UIViewController {
-
+    
     // MARK: - Delegate
     weak var timetableCreationDelegate: TimetableCreationDelegate?
     weak var habitCreationDelegate: HabitCreationDelegate?
     
     // MARK: - Private Properties
     private let params: GeometricParams
-    private var isHabitTracker: Bool
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
+    private var existingTracker: Tracker?
     private var selectedWeekDays: [WeekDay] = []
     private var selectedCategory: String = ""
-    private var isIrregularEvent: Bool = false
+    private var isHabitTracker: Bool
+    private var isEditingMode: Bool
+    private var existingTrackerId: UUID?
     
     private var emojis: [String] = [
         "😀", "😻", "🌺", "🐶", "❤️", "😱",
@@ -40,27 +42,34 @@ final class HabitCreation: UIViewController {
     ]
     
     private var colors: [UIColor] = [
-        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5,
-        .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10,
-        .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
+        .colorSelection1, .colorSelection2, .colorSelection3,
+        .colorSelection4, .colorSelection5, .colorSelection6,
+        .colorSelection7, .colorSelection8, .colorSelection9,
+        .colorSelection10, .colorSelection11, .colorSelection12,
+        .colorSelection13, .colorSelection14, .colorSelection15,
         .colorSelection16, .colorSelection17, .colorSelection18
     ]
     
+    // MARK: - UI Components
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .ypWhiteDay
+        scrollView.backgroundColor = .ypWhite
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         
         return scrollView
     }()
     
     private lazy var titleLabel = CustomTitleLabel(
-        text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
+        text: isEditingMode ? LocalizationHelper.localizedString("editing") :
+            (isHabitTracker ? LocalizationHelper.localizedString("newHabit") :
+                LocalizationHelper.localizedString("newIrregularEvent"))
     )
     
     private lazy var nameTextField: CustomTextField = {
         let textField = CustomTextField(
-            placeholder: "Введите название трекера"
+            placeholder: LocalizationHelper.localizedString(
+                "enterTrackerName"
+            )
         )
         
         return textField
@@ -68,7 +77,7 @@ final class HabitCreation: UIViewController {
     
     private lazy var limitMessage: UILabel = {
         let limit = UILabel()
-        limit.text = "Ограничение 38 символов"
+        limit.text = LocalizationHelper.localizedString("limitMessage")
         limit.textColor = .ypRed
         limit.textAlignment = .center
         limit.font = .systemFont(ofSize: 17, weight: .regular)
@@ -106,8 +115,9 @@ final class HabitCreation: UIViewController {
         tableView.layer.cornerRadius = 16
         tableView.showsVerticalScrollIndicator = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(HabitTableView.self,
-                           forCellReuseIdentifier: HabitTableView.cellID
+        tableView.register(
+            HabitTableView.self,
+            forCellReuseIdentifier: HabitTableView.cellID
         )
         return tableView
     }()
@@ -170,37 +180,56 @@ final class HabitCreation: UIViewController {
     
     private lazy var creationButton: UIButton = {
         let creation = UIButton()
-        creation.setTitle("Создать", for: .normal)
-        creation.backgroundColor = .ypGray
         creation.layer.cornerRadius = 16
         creation.translatesAutoresizingMaskIntoConstraints = false
-        creation.addTarget(self,
-                           action: #selector(createButtonTapped),
-                           for: .touchUpInside
+        creation.addTarget(
+            self,
+            action: #selector(createButtonTapped),
+            for: .touchUpInside
         )
         return creation
     }()
     
     private lazy var cancelButton: UIButton = {
         let cancel = UIButton()
-        cancel.setTitle("Отменить", for: .normal)
+        cancel.setTitle(
+            LocalizationHelper.localizedString("cancel"),
+            for: .normal
+        )
         cancel.setTitleColor(.red, for: .normal)
-        cancel.backgroundColor = .ypWhiteDay
+        cancel.backgroundColor = .ypWhite
         cancel.layer.borderWidth = 1
         cancel.layer.cornerRadius = 16
         cancel.layer.borderColor = UIColor.ypRed.cgColor
         cancel.translatesAutoresizingMaskIntoConstraints = false
-        cancel.addTarget(self,
-                         action: #selector(cancelButtonTapped),
-                         for: .touchUpInside
+        cancel.addTarget(
+            self,
+            action: #selector(cancelButtonTapped),
+            for: .touchUpInside
         )
         return cancel
     }()
     
+    private lazy var completedDaysLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = .boldSystemFont(ofSize: 32)
+        label.textAlignment = .center
+        label.textColor = .ypBlack
+        label.isHidden = !isEditingMode
+        return label
+    }()
+    
     // MARK: - Initialization
-    init(isHabit: Bool) {
-        self.isHabitTracker = isHabit
+    init(isHabit: Bool, isEditing: Bool = false, existingTracker: Tracker? = nil) {
         self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
+        self.isHabitTracker = isHabit
+        self.isEditingMode = isEditing
+        self.existingTracker = existingTracker
+        
+        if let existingTracker = existingTracker {
+            self.selectedCategory = existingTracker.initialCategory ?? ""
+        }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -210,14 +239,29 @@ final class HabitCreation: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
-        view.backgroundColor = .ypWhiteDay
+        super.viewDidLoad()
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
         settingSpacing()
-        emojiCollectionView.isScrollEnabled = false
-        colorCollectionView.isScrollEnabled = false
+        isEditingModeLoad()
+        getСategoryEditing()
+        updateButtonText()
+        updateAddButtonColor()
         nameTextField.delegate = self
         limitMessage.isHidden = true
+        emojiCollectionView.isScrollEnabled = false
+        colorCollectionView.isScrollEnabled = false
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateAddButtonColor()
+            emojiCollectionView.reloadData()
+            colorCollectionView.reloadData()
+        }
     }
     
     // MARK: - Setup View
@@ -228,6 +272,7 @@ final class HabitCreation: UIViewController {
         scrollView.addSubview(stackViewOption)
         
         [titleLabel,
+         completedDaysLabel,
          nameTextField,
          limitMessage,
          tableView,
@@ -246,6 +291,7 @@ final class HabitCreation: UIViewController {
     
     private func settingSpacing() {
         stackViewOption.setCustomSpacing(38, after: titleLabel)
+        stackViewOption.setCustomSpacing(24, after: completedDaysLabel)
         stackViewOption.setCustomSpacing(24, after: nameTextField)
         stackViewOption.setCustomSpacing(50, after: tableView)
         stackViewOption.setCustomSpacing(34, after: emojiCollectionView)
@@ -264,7 +310,6 @@ final class HabitCreation: UIViewController {
         stackViewOption.setCustomSpacing(CGFloat(spacingAfterTextField), after: nameTextField)
         stackViewOption.setCustomSpacing(CGFloat(spacingAfterLimitMessage), after: limitMessage)
     }
-    
     
     private func layoutConstraint() {
         NSLayoutConstraint.activate([
@@ -291,32 +336,137 @@ final class HabitCreation: UIViewController {
         ])
     }
     
-    // MARK: - Alert
-    private func showAlert(with title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+    private func updateAddButtonColor() {
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        let isTextFieldNotEmpty = !(nameTextField.text?.isEmpty ?? true)
+        let isScheduleSelected = !selectedWeekDays.isEmpty || !isHabitTracker
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
+        
+        creationButton.isEnabled = isTextFieldNotEmpty &&
+        isScheduleSelected && isEmojiSelected && isColorSelected
+        
+        if creationButton.isEnabled {
+            creationButton.backgroundColor = isDarkMode ? .white : .black
+            creationButton.setTitleColor(isDarkMode ? .black : .white, for: .normal)
+        } else {
+            creationButton.backgroundColor = .gray
+            creationButton.setTitleColor(.white, for: .normal)
+        }
     }
     
-    private func updateAddButtonColor() {
-        if let text = nameTextField.text, !text.isEmpty || !selectedWeekDays.isEmpty {
-            creationButton.isEnabled = true
-            creationButton.backgroundColor = .ypBlackDay
+    private func localizedDayCountString(for count: Int) -> String {
+        let suffix: String
+        switch count % 10 {
+        case 1:
+            suffix = (count % 100 == 11) ? LocalizationHelper.localizedString("daysMany") :
+            LocalizationHelper.localizedString("day")
+        case 2, 3, 4:
+            suffix = ([12, 13, 14].contains(count % 100)
+            ) ? LocalizationHelper.localizedString("daysMany") :
+            LocalizationHelper.localizedString("days")
+        default:
+            suffix = LocalizationHelper.localizedString("daysMany")
+        }
+        return "\(count) \(suffix)"
+    }
+    
+    // MARK: - Editing
+    private func isEditingModeLoad() {
+        if isEditingMode, let existingTracker = existingTracker {
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(
+                tracker: existingTracker
+            ) {
+                let completedDaysCount = CoreDataStack.shared.trackerRecordStore.completedDaysCountStore(
+                    for: trackerCoreData
+                )
+                completedDaysLabel.text = localizedDayCountString(for: completedDaysCount)
+                nameTextField.text = existingTracker.name
+                selectedEmoji = existingTracker.emoji
+                selectedColor = existingTracker.color.color
+                selectedCategory = existingTracker.initialCategory ?? ""
+                selectedWeekDays = existingTracker.timetable ?? []
+                tableView.reloadData()
+                choosenEmoji()
+                choosenColor()
+            } else {
+                print("Failed to convert Tracker to TrackerCoreData")
+            }
+        }
+    }
+    
+    private func getСategoryEditing() {
+        if let existingTracker = existingTracker {
+            if let trackerCoreData = CoreDataStack.shared.trackerStore.convertToCoreData(
+                tracker: existingTracker
+            ),
+               let categoryTitle = CoreDataStack.shared.trackerStore.fetchCategoryEditing(
+                for: trackerCoreData
+               ) {
+                self.selectedCategory = categoryTitle
+            }
+            self.selectedWeekDays = existingTracker.timetable ?? []
+        }
+    }
+    
+    private func updateButtonText() {
+        if isEditingMode {
+            creationButton.setTitle(LocalizationHelper.localizedString("save"), for: .normal)
         } else {
-            creationButton.isEnabled = false
-            creationButton.backgroundColor = .ypGray
+            creationButton.setTitle(LocalizationHelper.localizedString("сreate"), for: .normal)
+        }
+    }
+    
+    private func choosenEmoji() {
+        if let selectedEmoji, let emojiRow = emojis.firstIndex(of: selectedEmoji) {
+            DispatchQueue.main.async {
+                self.emojiCollectionView.selectItem(
+                    at: IndexPath(row: emojiRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.emojiCollectionView.cellForItem(
+                    at: IndexPath(row: emojiRow, section: 0)
+                ) as? EmojiCollection {
+                    cell.highlightEmoji()
+                }
+            }
+        }
+    }
+    
+    private func choosenColor() {
+        if let selectedColor, let colorRow = colors.firstIndex(of: selectedColor) {
+            DispatchQueue.main.async {
+                self.colorCollectionView.selectItem(
+                    at: IndexPath(row: colorRow, section: 0),
+                    animated: true, scrollPosition: .centeredHorizontally
+                )
+                if let cell = self.colorCollectionView.cellForItem(
+                    at: IndexPath(row: colorRow, section: 0)
+                ) as? ColorCollection {
+                    cell.highlightColor()
+                }
+            }
         }
     }
     
     // MARK: - Action
     @objc private func createButtonTapped() {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let emoji = selectedEmoji,
-              let color = selectedColor else {
-            showAlert(with: "Error", message: "Please enter tracker name.")
+        guard let name = nameTextField.text, !name.isEmpty else {
             return
         }
-
+        
+        if isHabitTracker && selectedWeekDays.isEmpty {
+            return
+        }
+        
+        guard let emoji = selectedEmoji else {
+            return
+        }
+        
+        guard let color = selectedColor else {
+            return
+        }
+        
         let codableColor = CodableColor(color: color)
         
         let timetable: [WeekDay]
@@ -330,24 +480,32 @@ final class HabitCreation: UIViewController {
             }
         }
         
-        let newTracker = Tracker(
-            id: UUID(),
-            name: name,
-            color: codableColor,
-            emoji: emoji,
-            timetable: timetable,
-            completedDays: []
-        )
-        
-        habitCreationDelegate?.createButtonidTap(
-            tracker: newTracker,
-            category: selectedCategory
-        )
-        
-        if let trackerViewController = habitCreationDelegate as? TrackerViewController {
-            trackerViewController.reload()
+        if isEditingMode, let existingTracker = existingTracker {
+            CoreDataStack.shared.trackerStore.updateTracker(
+                trackerId: existingTracker.id,
+                newName: name,
+                newColor: color,
+                newEmoji: emoji,
+                newTimetable: timetable,
+                newCategory: selectedCategory
+            )
+        } else {
+            let newTracker = Tracker(
+                id: UUID(),
+                name: name,
+                color: codableColor,
+                emoji: emoji,
+                timetable: timetable,
+                creationDate: existingTracker?.creationDate ?? Date(),
+                initialCategory: selectedCategory
+            )
+            habitCreationDelegate?.createButtonidTap(
+                tracker: newTracker,
+                category: selectedCategory
+            )
         }
         
+        updateButtonText()
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -373,14 +531,22 @@ extension HabitCreation: UITableViewDataSource {
         }
         
         if indexPath.row == 0 {
-            cell.configureCell(with: "Категория", subtitle: selectedCategory, isFirstCell: true)
+            cell.configureCell(
+                with: LocalizationHelper.localizedString("category"),
+                subtitle: selectedCategory, isFirstCell: true
+            )
         } else if indexPath.row == 1 {
-            let timemable = selectedWeekDays.isEmpty ? "" : selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
-            cell.configureCell(with: "Расписание", subtitle: timemable, isFirstCell: false)
+            let timemable = selectedWeekDays.isEmpty ? "" :
+            selectedWeekDays.map { $0.shortTitle }.joined(separator: ", ")
+            cell.configureCell(
+                with: LocalizationHelper.localizedString("timetable"),
+                subtitle: timemable, isFirstCell: false
+            )
         }
         cell.selectionStyle = . none
         
-        let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        let isLastCell = indexPath.row == tableView.numberOfRows(
+            inSection: indexPath.section) - 1
         
         if isLastCell {
             cell.hideSeparator()
@@ -422,7 +588,6 @@ extension HabitCreation: CategoryViewControllerDelegate {
         let indexPath = IndexPath(row: 0, section: 0)
         if let cell = tableView.cellForRow(at: indexPath) as? HabitTableView {
             cell.subtitleLabel.text = category
-            
             tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
@@ -433,6 +598,7 @@ extension HabitCreation: TimetableCreationDelegate {
     func didSelectDays(_ days: [WeekDay]) {
         selectedWeekDays = days
         tableView.reloadData()
+        updateAddButtonColor()
     }
 }
 
@@ -440,6 +606,8 @@ extension HabitCreation: TimetableCreationDelegate {
 extension HabitCreation: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        updateAddButtonColor()
+        
         return true
     }
     
@@ -472,7 +640,8 @@ extension HabitCreation: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let totalSpacing = (params.cellSpacing * CGFloat(params.cellCount - 1)) + params.leftInsets + params.rightInsets
+        let totalSpacing = (params.cellSpacing * CGFloat(params.cellCount - 1)
+        ) + params.leftInsets + params.rightInsets
         let availableWidth = collectionView.bounds.width - totalSpacing
         let widthPerItem = availableWidth / CGFloat(params.cellCount)
         return CGSize(width: widthPerItem, height: widthPerItem)
@@ -509,86 +678,152 @@ extension HabitCreation: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UICollectionViewDataSource
 extension HabitCreation: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         18
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         if collectionView == emojiCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCollection.idetnifier,
-                                                                for: indexPath) as? EmojiCollection else {
-                assertionFailure("Could not cast to EmojiCell")
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmojiCollection.idetnifier,
+                for: indexPath
+            ) as? EmojiCollection else {
+                assertionFailure(
+                    "Could not cast to EmojiCell"
+                )
                 return UICollectionViewCell()
             }
             
             let emoji = emojis[indexPath.item]
             cell.emojiLabel.text = emoji
+            if emoji == selectedEmoji {
+                cell.highlightEmoji()
+            } else {
+                cell.unhighlightEmoji()
+            }
             return cell
+            
         } else if collectionView == colorCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCollection.idetnifier,
-                                                                for: indexPath) as? ColorCollection else {
-                assertionFailure("Could not cast to ColorCell")
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: ColorCollection.idetnifier,
+                for: indexPath
+            ) as? ColorCollection else {
+                assertionFailure(
+                    "Could not cast to ColorCell"
+                )
                 return UICollectionViewCell()
             }
             
             let color = colors[indexPath.item]
             cell.colorView.backgroundColor = color
+            
+            if color == selectedColor {
+                cell.highlightColor()
+            } else {
+                cell.unhighlightColor()
+            }
+            
             return cell
         }
         
         return UICollectionViewCell()
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        viewForSupplementaryElementOfKind kind: String,
-                        at indexPath: IndexPath
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
     ) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader else {
-            assertionFailure( "Failed to cast UICollectionReusableView" )
+            assertionFailure(
+                "Failed to cast UICollectionReusableView"
+            )
             return UICollectionReusableView()
         }
         
         guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: TrackerHeader.headerIdentifier,
-            for: indexPath) as? TrackerHeader
-        else { assertionFailure("Failed to cast UICollectionReusableView" )
+            for: indexPath
+        ) as? TrackerHeader
+        else { assertionFailure(
+            "Failed to cast UICollectionReusableView"
+        )
             return UICollectionReusableView()
         }
         
         if collectionView == emojiCollectionView {
-            header.configure(with: "Emoji")
+            header.configure(
+                with: LocalizationHelper.localizedString(
+                    "emoji"
+                )
+            )
         } else if collectionView == colorCollectionView {
-            header.configure(with: "Цвет")
+            header.configure(
+                with: LocalizationHelper.localizedString(
+                    "color"
+                )
+            )
         }
         
         return header
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         if collectionView == emojiCollectionView {
-            let selectedCell = collectionView.cellForItem(at: indexPath) as? EmojiCollection
+            let selectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? EmojiCollection
             selectedEmoji = emojis[indexPath.item]
-            
             selectedCell?.highlightEmoji()
+            for cellIndex in collectionView.indexPathsForVisibleItems {
+                if cellIndex != indexPath {
+                    let cell = collectionView.cellForItem(
+                        at: cellIndex
+                    ) as? EmojiCollection
+                    cell?.unhighlightEmoji()
+                }
+            }
         } else if collectionView == colorCollectionView {
-            let selectedCell = collectionView.cellForItem(at: indexPath) as? ColorCollection
+            let selectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? ColorCollection
             selectedColor = colors[indexPath.item]
-            
             selectedCell?.highlightColor()
+            for cellIndex in collectionView.indexPathsForVisibleItems {
+                if cellIndex != indexPath {
+                    let cell = collectionView.cellForItem(
+                        at: cellIndex
+                    ) as? ColorCollection
+                    cell?.unhighlightColor()
+                }
+            }
         }
+        updateAddButtonColor()
     }
     
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didDeselectItemAt indexPath: IndexPath
+    ) {
         if collectionView == emojiCollectionView {
-            let deselectedCell = collectionView.cellForItem(at: indexPath) as? EmojiCollection
+            let deselectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? EmojiCollection
             deselectedCell?.unhighlightEmoji()
-            
         } else if collectionView == colorCollectionView {
-            let deselectedCell = collectionView.cellForItem(at: indexPath) as? ColorCollection
+            let deselectedCell = collectionView.cellForItem(
+                at: indexPath
+            ) as? ColorCollection
             deselectedCell?.unhighlightColor()
         }
     }

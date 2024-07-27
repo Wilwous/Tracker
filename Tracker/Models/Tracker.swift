@@ -12,8 +12,9 @@ struct Tracker: Codable {
     let name: String
     let color: CodableColor
     let emoji: String
-    let timetable: [WeekDay]
-    let completedDays: [Date]
+    let timetable: [WeekDay]?
+    let creationDate: Date
+    let initialCategory: String?
     
     static func completedDaysFromJSON(_ json: String) -> [Date]? {
         let decoder = JSONDecoder()
@@ -41,7 +42,7 @@ struct Tracker: Codable {
     
     func completedDaysToJSON() -> String? {
         let encoder = JSONEncoder()
-        if let data = try? encoder.encode(completedDays) {
+        if let data = try? encoder.encode(creationDate) {
             return String(data: data, encoding: .utf8)
         }
         return nil

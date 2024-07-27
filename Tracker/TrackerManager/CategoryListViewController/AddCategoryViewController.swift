@@ -15,30 +15,32 @@ final class AddCategoryViewController: UIViewController {
     
     private lazy var titleLabel: CustomTitleLabel = {
         let label = CustomTitleLabel(
-            text: "Новая категория"
+            text: LocalizationHelper.localizedString(
+                "newCategory"
+            )
         )
-        
         return label
     }()
     
     private lazy var nameTextField: UITextField = {
         let textField = CustomTextField(
-            placeholder: "Введите название категории"
+            placeholder: LocalizationHelper.localizedString(
+                "enterCategoryName"
+            )
         )
-        
         textField.addTarget(
             self, action: #selector(textFieldDidChange(_ :)),
             for: .editingChanged
         )
-        
         return textField
     }()
     
     private lazy var creationButton: CustomButton = {
         let button = CustomButton(
-            title: "Готово"
+            title: LocalizationHelper.localizedString(
+                "doneButtonText"
+            )
         )
-        
         button.addTarget(
             self,
             action: #selector(creationButtonTapped),
@@ -50,7 +52,7 @@ final class AddCategoryViewController: UIViewController {
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         nameTextField.delegate = self
         addElements()
         layoutConstraint()
@@ -95,7 +97,7 @@ final class AddCategoryViewController: UIViewController {
         
         viewModel.onCreationButtonStateUpdated = { [weak self] isEnabled in
             self?.creationButton.isEnabled = isEnabled
-            self?.creationButton.backgroundColor = isEnabled ? .ypBlackDay : .ypGray
+            self?.creationButton.backgroundColor = isEnabled ? .ypBlack : .ypGray
         }
     }
     

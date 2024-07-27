@@ -14,10 +14,10 @@ final class HabitTableView: UITableViewCell {
     // MARK: - Delegate
     weak var delegate: HabitTableViewDelegate?
     
-    // MARK: - Private Properties
+    // MARK: - UI Components
     private lazy var titleLabel: UILabel = {
         let title = UILabel()
-        title.textColor = .ypBlackDay
+        title.textColor = .ypBlack
         title.font = .systemFont(ofSize: 16, weight: .regular)
         
         return title
@@ -49,7 +49,7 @@ final class HabitTableView: UITableViewCell {
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .ypBackgroundDay
+        self.backgroundColor = .ypBackground
         addElements()
         layoutConstraint()
     }
@@ -112,7 +112,8 @@ extension HabitTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 1 {
             let selectedCell = tableView.cellForRow(at: indexPath) as? HabitTableView
-            if let titleText = selectedCell?.titleLabel.text, titleText == "Расписание" {
+            if let titleText = selectedCell?.titleLabel.text,
+               titleText == LocalizationHelper.localizedString("timetable") {
                 delegate?.didSelectTimetable()
             }
         }

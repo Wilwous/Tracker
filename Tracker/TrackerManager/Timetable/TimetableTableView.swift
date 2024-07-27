@@ -24,7 +24,7 @@ final class TimetableTableView: UITableViewCell {
     
     private lazy var weekDayLabel: UILabel = {
         let WeekDay = UILabel()
-        WeekDay.textColor = .ypBlackDay
+        WeekDay.textColor = .ypBlack
         WeekDay.font = .systemFont(ofSize: 17, weight: .regular)
         
         return WeekDay
@@ -40,9 +40,10 @@ final class TimetableTableView: UITableViewCell {
     private lazy var daySwitch: UISwitch = {
         let daySwitch = UISwitch()
         daySwitch.onTintColor = .ypBlue
-        daySwitch.addTarget(self,
-                            action: #selector(daySwitchTapped),
-                            for: .valueChanged)
+        daySwitch.addTarget(
+            self,
+            action: #selector(daySwitchTapped),
+            for: .valueChanged)
         
         return daySwitch
     }()
@@ -50,7 +51,7 @@ final class TimetableTableView: UITableViewCell {
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .ypBackgroundDay
+        self.backgroundColor = .ypBackground
         addElements()
         layoutConstraint()
     }
@@ -60,12 +61,15 @@ final class TimetableTableView: UITableViewCell {
     }
     
     // MARK: - Public Methods
-    func configurationCell(with weekDay: WeekDay, isLastCell: Bool, isSelected: Bool) {
-        self.weekDay = weekDay
-        weekDayLabel.text = weekDay.rawValue
-        customSeparatorView.isHidden = isLastCell
-        daySwitch.isOn = isSelected
-    }
+    func configurationCell(
+        with weekDay: WeekDay,
+        isLastCell: Bool,
+        isSelected: Bool) {
+            self.weekDay = weekDay
+            weekDayLabel.text = weekDay.asText()
+            customSeparatorView.isHidden = isLastCell
+            daySwitch.isOn = isSelected
+        }
     
     // MARK: - Setup View
     private func addElements() {
@@ -99,4 +103,3 @@ final class TimetableTableView: UITableViewCell {
         delegate?.daySwitchDidTapped(to: sender.isOn, of: weekDay)
     }
 }
-

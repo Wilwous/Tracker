@@ -9,10 +9,14 @@ import UIKit
 
 final class OnboardingPageViewController: UIViewController {
     
+    // MARK: - Public Properties
     let page: OnboardingPage
     
+    // MARK: - UI Components
     private lazy var backgroundImageView: UIImageView = {
-        let view = UIImageView(image: UIImage(named: page.imageName))
+        let view = UIImageView(
+            image: UIImage(named: page.imageName)
+        )
         view.contentMode = .scaleAspectFill
         
         return view
@@ -70,4 +74,3 @@ final class OnboardingPageViewController: UIViewController {
         ])
     }
 }
-

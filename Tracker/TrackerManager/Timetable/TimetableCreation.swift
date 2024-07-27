@@ -20,10 +20,13 @@ final class TimetableCreation: UIViewController {
     // MARK: - Private properties
     private var selectedWeekDay: Set<WeekDay> = []
     
+    // MARK: - UI Components
     private lazy var timetableLabel: UILabel = {
         let timetable = UILabel()
-        timetable.text = "Расписание"
-        timetable.textColor = .ypBlackDay
+        timetable.text = LocalizationHelper.localizedString(
+            "timetable"
+        )
+        timetable.textColor = .ypBlack
         timetable.font = .systemFont(ofSize: 16, weight: .medium)
         
         return timetable
@@ -36,7 +39,7 @@ final class TimetableCreation: UIViewController {
         tableView.separatorStyle = .none
         tableView.clipsToBounds = true
         tableView.showsVerticalScrollIndicator = false
-        tableView.backgroundColor = .ypBackgroundDay
+        tableView.backgroundColor = .ypBackground
         tableView.layer.cornerRadius = 16
         tableView.register(
             TimetableTableView.self,
@@ -48,9 +51,12 @@ final class TimetableCreation: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let done = UIButton(type: .system)
-        done.setTitle("Готово", for: .normal)
-        done.setTitleColor(.white, for: .normal)
-        done.backgroundColor = .ypBlackDay
+        done.setTitle(
+            LocalizationHelper.localizedString("doneButtonText"),
+            for: .normal
+        )
+        done.setTitleColor(.ypWhite, for: .normal)
+        done.backgroundColor = .ypBlack
         done.layer.cornerRadius = 16
         done.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         done.addTarget(
@@ -65,7 +71,7 @@ final class TimetableCreation: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .ypWhiteDay
+        view.backgroundColor = .ypWhite
         addElements()
         layoutConstraint()
     }

@@ -10,16 +10,21 @@ import Foundation
 enum OnboardingPage: Int, CaseIterable {
     case pageOne = 0
     case pageTwo
-
+    
+    // MARK: - Public properties
     var titlePage: String {
         switch self {
         case .pageOne:
-            return "Отслеживайте только то, что хотите"
+            return LocalizationHelper.localizedString(
+                "onboardingText1"
+            )
         case .pageTwo:
-            return "Даже если это не литры воды и йога"
+            return LocalizationHelper.localizedString(
+                "onboardingText2"
+            )
         }
     }
-
+    
     var imageName: String {
         switch self {
         case .pageOne:
@@ -29,3 +34,4 @@ enum OnboardingPage: Int, CaseIterable {
         }
     }
 }
+
